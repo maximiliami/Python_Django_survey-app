@@ -1,0 +1,2 @@
+mysqlclient
+Django==4.0
