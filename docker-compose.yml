@@ -8,7 +8,7 @@
 #
 #     docker-compose up
 #
-# aus. Anschließend ist Ihr Projekt unter http://localhost/, und PhpMyAdmin
+# aus. Anschließend ist Ihr Projekt unter http://localhost:8000, und PhpMyAdmin
 # unter http://localhost:8080 erreichbar. Änderungen am Code sind sofort, und
 # ohne Neustart der Umgebung sichtbar. Sie können die Umgebung wieder beenden,
 # indem Sie in dem entsprechenden Terminal die Tastenkombination Strg + C
@@ -28,7 +28,7 @@ services:
   project:
     build: .
     ports:
-    - "80:80"
+    - "8000:8000"
     volumes:
       #- ./app:/usr/src/app/
     links:
