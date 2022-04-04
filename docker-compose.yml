@@ -40,7 +40,7 @@ services:
       MYSQL_USERNAME: webapp
       MYSQL_USERPASS: hopper
       DJANGO_DEBUG: "1"
-      DJANGO_SECRET: "django-insecure-d0^)g)s47#m_f55+$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0"
+      DJANGO_SECRET: "django-insecure-d0^)g)s47#m_f55+$$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0"
   db:
     image: "mariadb:10"
     environment:
