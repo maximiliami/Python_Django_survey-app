@@ -21,12 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = os.environ['DJANGO_SECRET']
+# Secret key for Docker
+# SECRET_KEY = os.environ['DJANGO_SECRET']
 SECRET_KEY = 'django-insecure-d0^)g)s47#m_f55+$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Security for Docker
 DEBUG = os.environ['DJANGO_DEBUG'] == '1'
-
+# DEBUG = True
 ALLOWED_HOSTS = []
 
 
@@ -72,28 +74,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'zyklus_app.wsgi.application'
 
 
-# Database
+# Database Docker
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
 DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['MYSQL_DATABASE'],
+        'USER': os.environ['MYSQL_USERNAME'],
+        'PASSWORD': os.environ['MYSQL_USERPASS'],
+        'HOST': os.environ['MYSQL_SERVER'],
+        'PORT': os.environ['MYSQL_PORT'],
+    }
+}
+
+# local development
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Korrekte DB Connection?!
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': os.environ['MYSQL_DATABASE'],
-#        'USER': os.environ['MYSQL_USERNAME'],
-#        'PASSWORD': os.environ['MYSQL_USERPASS'],
-#        'HOST': os.environ['MYSQL_SERVER'],
-#        'PORT': os.environ['MYSQL_PORT'],
-#    }
-#}
-
+"""
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
