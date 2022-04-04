@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+#SECRET_KEY = os.environ['DJANGO_SECRET']
 SECRET_KEY = 'django-insecure-d0^)g)s47#m_f55+$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ['DJANGO_DEBUG'] == '1'
 
 ALLOWED_HOSTS = []
 
@@ -81,16 +83,16 @@ DATABASES = {
 }
 
 # Korrekte DB Connection?!
-"""DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dbuwp',
-        'USER': 'webapp',
-        'PASSWORD': 'hopper',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}"""
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': os.environ['MYSQL_DATABASE'],
+#        'USER': os.environ['MYSQL_USERNAME'],
+#        'PASSWORD': os.environ['MYSQL_USERPASS'],
+#        'HOST': os.environ['MYSQL_SERVER'],
+#        'PORT': os.environ['MYSQL_PORT'],
+#    }
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
