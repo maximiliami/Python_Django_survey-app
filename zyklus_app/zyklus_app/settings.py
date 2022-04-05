@@ -27,10 +27,14 @@ SECRET_KEY = 'django-insecure-d0^)g)s47#m_f55+$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Security for Docker
-DEBUG = os.environ['DJANGO_DEBUG'] == '1'
+DEBUG = 'DJANGO_DEBUG' in os.environ and os.environ['DJANGO_DEBUG'] == '1'
 # DEBUG = True
 ALLOWED_HOSTS = []
 
+# ALLOWED_HOSTS must not be empty if DEBUG == False
+# so we set it with an environment-variable
+if 'DJANGO_HOST' in os.environ:
+    ALLOWED_HOSTS.append(os.environ['DJANGO_HOST'])
 
 # Application definition
 
