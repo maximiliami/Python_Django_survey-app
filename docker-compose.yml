@@ -25,22 +25,6 @@
 
 version: '3'
 services:
-  project:
-    build: .
-    ports:
-    - "8000:8000"
-    volumes:
-      - ./zyklus_app:/usr/src/app/
-    links:
-    - db
-    environment:
-      MYSQL_SERVER: db
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: dbuwp
-      MYSQL_USERNAME: webapp
-      MYSQL_USERPASS: hopper
-      DJANGO_DEBUG: "1"
-      DJANGO_SECRET: "django-insecure-d0^)g)s47#m_f55+$$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0"
   db:
     image: "mariadb:10"
     environment:
@@ -53,11 +37,27 @@ services:
   phpmyadmin:
     image: "phpmyadmin/phpmyadmin:5"
     ports:
-    - "8080:80"
+      - "8080:80"
     links:
-    - db
+      - db
     environment:
       PMA_USER: webapp
       PMA_PASSWORD: hopper
+  project:
+    build: .
+    ports:
+    - "8000:8000"
+    volumes:
+      - ./zyklus_app:/usr/src/app/
+    links:
+    - db
+    environment:
+      DB_ENGINE: django.db.backends.mysql
+      MYSQL_SERVER: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: dbuwp
+      MYSQL_USERNAME: webapp
+      MYSQL_USERPASS: hopper
+      DJANGO_DEBUG: 1
 volumes:
   dbvolume: {}

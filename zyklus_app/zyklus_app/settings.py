@@ -16,7 +16,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -27,12 +26,12 @@ SECRET_KEY = 'django-insecure-d0^)g)s47#m_f55+$)4mbzei#@jvf4ghktd+n*zkc&f+s7(sq0
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Security for Docker
-DEBUG = 'DJANGO_DEBUG' in os.environ and os.environ['DJANGO_DEBUG'] == '1'
-# DEBUG = True
+DEBUG = (bool(int(os.environ.get('DJANGO_DEBUG', 1))))
+
 ALLOWED_HOSTS = []
 
-# ALLOWED_HOSTS must not be empty if DEBUG == False
-# so we set it with an environment-variable
+# ALLOWED_HOSTS must not be empty if DEBUG == False,
+# we set it with an environment-variable
 if 'DJANGO_HOST' in os.environ:
     ALLOWED_HOSTS.append(os.environ['DJANGO_HOST'])
 
@@ -77,12 +76,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'zyklus_app.wsgi.application'
 
-
 # Database Docker
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': os.environ['DB_ENGINE'],
         'NAME': os.environ['MYSQL_DATABASE'],
         'USER': os.environ['MYSQL_USERNAME'],
         'PASSWORD': os.environ['MYSQL_USERPASS'],
@@ -91,14 +89,6 @@ DATABASES = {
     }
 }
 
-# local development
-"""DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-"""
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
@@ -117,7 +107,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -128,7 +117,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
