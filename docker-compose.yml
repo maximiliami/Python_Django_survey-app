@@ -48,7 +48,7 @@ services:
     ports:
     - "8000:8000"
     volumes:
-      - ./zyklus_app:/usr/src/app/
+      - .:/zyklus_app/
     links:
     - db
     environment:
