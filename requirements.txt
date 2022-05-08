@@ -1,4 +1,7 @@
-mysqlclient
 asgiref==3.5.0
+beautifulsoup4==4.11.1
 Django==4.0.3
+django-bootstrap5==21.3
+mysqlclient==2.1.0
+soupsieve==2.3.2.post1
 sqlparse==0.4.2
