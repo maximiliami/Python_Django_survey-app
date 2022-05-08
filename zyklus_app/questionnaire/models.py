@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -39,7 +41,6 @@ class Pair(models.Model):
 
 
 class PseudoUser(AbstractBaseUser, PermissionsMixin):
-
     user_code = models.CharField(_('Persönlicher Code'), max_length=10, unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
@@ -55,12 +56,16 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
 
 
 class QuestionnaireStart(models.Model):
+    """Lookup Questionnaire"""
+    date = datetime.datetime.now()
     pass
 
 
 class QuestionnaireEnd(models.Model):
+    """Completion Questionnaire"""
     pass
 
 
 class QuestionnaireDaily(models.Model):
+    """Daily Questionnaire"""
     pass

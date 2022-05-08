@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-import questionnaire.views
+from questionnaire.views import index, PseudoUserListView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', questionnaire.views.index),
+    path('', index),
+    path('pseudouser', PseudoUserListView.as_view()),
 ]

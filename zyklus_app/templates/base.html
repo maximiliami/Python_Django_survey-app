@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load django_bootstrap5 %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+</head>
+<body>
+    {% bootstrap_messages %}
+        {% block content %}
+        <p>Dummy From Base-Template</p>
+    {% endblock %}
+
+    {% block footer %}
+        <p>z.B. Impressum</p>
+    {% endblock %}
+
+</body>
+</html>
