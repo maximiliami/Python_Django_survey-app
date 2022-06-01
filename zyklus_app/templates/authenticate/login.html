@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{%  block content %}
+    <div class="row">
+        <div class="container-sm card-loginform mt-5 mb-5 col-2">
+            <h1 class="text-center mt-5 mb-5">{{ page_title }}</h1>
+            <form class="" action="" method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label fw-bold">Persönlicher Code</label>
+                    <input type="text" class="form-control" name="username">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label fw-bold">Passwort</label>
+                    <input type="password" class="form-control" name="password">
+                </div>
+                <button type="submit" value="submit" class="btn btn-primary mt-2">Anmelden</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

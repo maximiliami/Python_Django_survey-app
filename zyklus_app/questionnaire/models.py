@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -40,12 +41,39 @@ class Pair(models.Model):
         return self.ident
 
 
+class QuestionnaireStart(models.Model):
+    """Lookup Questionnaire"""
+    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
+                                                      default=0)
+    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+
+    date = datetime.datetime.now()
+
+
+class QuestionnaireEnd(models.Model):
+    """Completion Questionnaire"""
+    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
+                                                      default=0)
+    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    date = datetime.datetime.now()
+
+
 class PseudoUser(AbstractBaseUser, PermissionsMixin):
     user_code = models.CharField(_('Persönlicher Code'), max_length=10, unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True)
+    questionnaire_start = models.OneToOneField(QuestionnaireStart, on_delete=models.CASCADE, null=True)
+    questionnaire_end = models.OneToOneField(QuestionnaireEnd, on_delete=models.CASCADE, null=True)
 
     objects = CustomAccountManager()
 
@@ -55,17 +83,15 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
         return self.user_code
 
 
-class QuestionnaireStart(models.Model):
-    """Lookup Questionnaire"""
-    date = datetime.datetime.now()
-    pass
-
-
-class QuestionnaireEnd(models.Model):
-    """Completion Questionnaire"""
-    pass
-
-
 class QuestionnaireDaily(models.Model):
     """Daily Questionnaire"""
-    pass
+    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
+                                                      default=0)
+    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    date = datetime.datetime.now()
+
+    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
