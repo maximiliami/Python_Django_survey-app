@@ -12,7 +12,8 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/', context)
+            messages.success(request, f"Welcome {username}")
+            return redirect('/test', context)
         else:
             messages.error(request, "There was an error!")
             return redirect('/', context)
