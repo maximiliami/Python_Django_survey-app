@@ -2,21 +2,23 @@
 {% load django_bootstrap5 %}
 
 {%  block content %}
-    <div class="row">
-        <div class="container-sm card-loginform mt-5 mb-5 col-2">
-            <h1 class="text-center mt-5 mb-5">{{ page_title }}</h1>
-            <form class="" action="" method="POST">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label fw-bold">Persönlicher Code</label>
-                    <input type="text" class="form-control" name="username">
-                </div>
-                <div class="mb-3">
-                    <label for="exampleInputPassword1" class="form-label fw-bold">Passwort</label>
-                    <input type="password" class="form-control" name="password">
-                </div>
+
+    <div class="wrapper">
+        <div class="text-center mt-4 name">Zyklus-App</div>
+        <form class="p-3 mt-5" method="post">
+            {% csrf_token %}
+            <div class="form-field d-flex justify-content-center">
+                <span class="fas fa-user"></span>
+                <input type="text" name="username" id="userName" placeholder="Username">
+            </div>
+            <div class="form-field d-flex justify-content-center">
+                <span class="fas fa-key"></span>
+                <input type="password" name="password" id="pwd" placeholder="Password">
+            </div>
+            <div class="d-flex justify-content-center">
                 <button type="submit" value="submit" class="btn btn-primary mt-2">Anmelden</button>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
+
 {% endblock %}

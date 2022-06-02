@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 {% load django_bootstrap5 %}
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>{{ page_title }}</title>
     {% bootstrap_css %}
     {% bootstrap_javascript %}
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static "/css/myStyle.css" %}" />
 </head>
 <body>
     {% bootstrap_messages %}
-        {% block content %}
-        <p>Dummy From Base-Template</p>
+    {% block content %}
+        {# content here #}
     {% endblock %}
-
     {% block footer %}
         {# z.B. Footer #}
     {% endblock %}
-
 </body>
 </html>
