@@ -32,13 +32,19 @@ DEBUG = (bool(int(os.environ.get('DJANGO_DEBUG', 1))))
 
 ALLOWED_HOSTS = []
 
+# CSRF Deploy test
+CSRF_TRUSTED_ORIGINS = []
+
+if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
+    CSRF_TRUSTED_ORIGINS.append('https://*' + os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
+
+if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
+    CSRF_COOKIE_DOMAIN = (os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
+
 # ALLOWED_HOSTS must not be empty if DEBUG == False,
 # we set it with an environment-variable
 if 'DJANGO_HOST' in os.environ:
     ALLOWED_HOSTS.append(os.environ['DJANGO_HOST'])
-
-if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
-    CSRF_COOKIE_DOMAIN = (os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
 
 # Application definition
 
@@ -139,4 +145,4 @@ AUTH_USER_MODEL = 'questionnaire.PseudoUser'
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    ]
+]
