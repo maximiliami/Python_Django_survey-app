@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.conf.global_settings import CSRF_COOKIE_DOMAIN
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -33,7 +35,10 @@ ALLOWED_HOSTS = []
 # ALLOWED_HOSTS must not be empty if DEBUG == False,
 # we set it with an environment-variable
 if 'DJANGO_HOST' in os.environ:
-    ALLOWED_HOSTS.append(os.environ['DJANGO_HOST'])
+    ALLOWED_HOSTS = (os.environ['DJANGO_HOST'])
+
+if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
+    CSRF_COOKIE_DOMAIN.append(os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
 
 # Application definition
 
