@@ -35,10 +35,10 @@ ALLOWED_HOSTS = []
 # ALLOWED_HOSTS must not be empty if DEBUG == False,
 # we set it with an environment-variable
 if 'DJANGO_HOST' in os.environ:
-    ALLOWED_HOSTS = (os.environ['DJANGO_HOST'])
+    ALLOWED_HOSTS.append(os.environ['DJANGO_HOST'])
 
 if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
-    CSRF_COOKIE_DOMAIN.append(os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
+    CSRF_COOKIE_DOMAIN = (os.environ['DJANGO_CSRF_COOKIE_DOMAIN'])
 
 # Application definition
 
