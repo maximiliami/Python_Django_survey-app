@@ -5,33 +5,30 @@
 {% bootstrap_javascript %}
 
 {%  block content %}
-    <table class="table table-danger table-striped">
+    <table class="table table-dark table-striped">
         <thead class="table table-dark">
-        <tr class="table table-dark">
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Handle</th>
+        <tr>
+            <th scope="col">User-Code</th>
+            <th scope="col">Pair-Code</th>
+            <th scope="col">Anzeigen</th>
+            <th scope="col">Editieren</th>
+            <th scope="col">Löschen</th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-        </tr>
-        <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-        </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-        </tr>
-        </tbody>
+
+        {% for member in object_list %}
+            {# only shows user who are not admin or Staff #}
+            {% if not member.is_superuser and not member.is_staff %}
+            <tr>
+                <td>{{ member.user_code }}</td>
+                <td>{{ plant.pair }}</td>
+                <td><a href="{{ 'member_detail/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Anzeigen</a></td>
+                <td><a href="{{ 'update_member/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Editieren</a></td>
+                <td><a href="{{ 'delete_member/' }} {{ member.id }}" class="btn btn-danger btn-sm align-middle">Löschen</a></td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+
     </table>
+    <a class="btn btn-primary btn-lg" href="{% url 'member:create_member' %}" role="button">Neuer Benutzer</a>
 {% endblock %}

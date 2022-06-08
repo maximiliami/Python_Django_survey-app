@@ -24,6 +24,8 @@ class CustomAccountManager(BaseUserManager):
 
     def create_user(self, user_code, password, **other_fields):  #
 
+        other_fields.setdefault('is_staff', True)
+
         if not user_code:
             raise ValueError(_('Sie müssen Ihren User-Code eingeben'))
 
@@ -70,7 +72,7 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
     user_code = models.CharField(_('Persönlicher Code'), max_length=10, unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True)
     questionnaire_start = models.OneToOneField(QuestionnaireStart, on_delete=models.CASCADE, null=True)
     questionnaire_end = models.OneToOneField(QuestionnaireEnd, on_delete=models.CASCADE, null=True)

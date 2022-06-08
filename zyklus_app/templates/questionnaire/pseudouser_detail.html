@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{# Fills Block content #}
+{% block content %}
+    <h1>Benutzer: {{ object.id }}</h1>
+    <p>User-Code: {{ object.user_code}}</p>
+    <p>Pair: {{ object.pair }}</p>
+
+    <p>Superuser: {% if object.is_superuser %}
+        Ja
+    {% else %}
+        Nein
+    {% endif %}
+    </p>
+
+    <a class="btn btn-primary btn-lg" href="{% url 'member:member_list' %}" role="button">Zurück</a>
+{% endblock %}

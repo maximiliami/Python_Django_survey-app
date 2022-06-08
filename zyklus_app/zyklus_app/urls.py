@@ -22,7 +22,7 @@ import questionnaire.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', member.views.login_user),
-    path('member/', include('member.urls')),
+    path('member/', include('member.urls', namespace="member")),
     path('member/', include('django.contrib.auth.urls')),
     path('test', questionnaire.views.test)
 ]

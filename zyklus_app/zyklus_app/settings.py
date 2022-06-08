@@ -32,7 +32,7 @@ DEBUG = (bool(int(os.environ.get('DJANGO_DEBUG', 1))))
 
 ALLOWED_HOSTS = []
 
-# CSRF Deploy test
+# CSRF Deploy
 CSRF_TRUSTED_ORIGINS = []
 
 if 'DJANGO_CSRF_COOKIE_DOMAIN' in os.environ:
@@ -146,3 +146,5 @@ AUTH_USER_MODEL = 'questionnaire.PseudoUser'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+LOGOUT_REDIRECT_URL = "member:login"

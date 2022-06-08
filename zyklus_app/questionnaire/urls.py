@@ -1,7 +1,7 @@
 from django.urls import path
 
-import questionnaire.views
-from . import views
+
+app_name = "questionnaire"
 
 urlpatterns = [
     path('', 'login'),
