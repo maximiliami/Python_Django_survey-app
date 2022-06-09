@@ -40,6 +40,8 @@
                                     {% if user.is_superuser or user.is_staff %}
                                         <li><a class="dropdown-item" href="{% url 'member:create_member' %}">Benutzer anlegen</a></li>
                                         <li><a class="dropdown-item" href="{% url 'member:member_list' %}">Benutzer Liste</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'questionnaire:create_pair' %}">Paar anlegen</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'questionnaire:pair_list' %}">Paar Liste</a></li>
                                     {% endif %}
                                     <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                                 </ul>

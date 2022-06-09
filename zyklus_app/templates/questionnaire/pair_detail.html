@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{# Fills Block content #}
+{% block content %}
+    <h1>Pair: {{ object.ident }}</h1>
+    {# TODO: Aus der DB holen #}
+    <p>PseudoUser 1: </p>
+    <p>PseudoUser 2: </p>
+
+    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
+{% endblock %}

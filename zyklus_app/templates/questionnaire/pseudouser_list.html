@@ -21,7 +21,7 @@
             {% if not member.is_superuser and not member.is_staff %}
             <tr>
                 <td>{{ member.user_code }}</td>
-                <td>{{ plant.pair }}</td>
+                <td>{{ member.pair }}</td>
                 <td><a href="{{ 'member_detail/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Anzeigen</a></td>
                 <td><a href="{{ 'update_member/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Editieren</a></td>
                 <td><a href="{{ 'delete_member/' }} {{ member.id }}" class="btn btn-danger btn-sm align-middle">Löschen</a></td>

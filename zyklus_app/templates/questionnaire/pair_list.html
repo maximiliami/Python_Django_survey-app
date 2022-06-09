@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{%  block content %}
+    <table class="table table-dark table-striped">
+        <thead class="table table-dark">
+        <tr>
+            <th scope="col">User-Code</th>
+            <th scope="col">PseudoUser 1</th>
+            <th scope="col">PseudoUser 2</th>
+            <th scope="col">Anzeigen</th>
+            <th scope="col">Editieren</th>
+            <th scope="col">Löschen</th>
+        </tr>
+        </thead>
+
+        {% for member in object_list %}
+            {# only shows user who are not admin or Staff #}
+            {% if not member.is_superuser and not member.is_staff %}
+            <tr>
+                <td>{{ member.ident }}</td>
+
+                {# TODO: PseudoUser aus der DB holen und anzeigen #}
+                <td>{{ member.pseudouser_set }}</td>
+                <td>{{ member.pseudouser_set }}</td>
+                <td><a href="{{ 'pair_detail/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Anzeigen</a></td>
+                <td><a href="{{ 'update_pair/' }} {{ member.id }}" class="btn btn-primary btn-sm align-middle">Editieren</a></td>
+                <td><a href="{{ 'delete_pair/' }} {{ member.id }}" class="btn btn-danger btn-sm align-middle">Löschen</a></td>
+            </tr>
+            {% endif %}
+        {% endfor %}
+
+    </table>
+    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+{% endblock %}

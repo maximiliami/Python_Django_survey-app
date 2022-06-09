@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', member.views.login_user),
     path('member/', include('member.urls', namespace="member")),
+    path('questionnaire/', include('questionnaire.urls', namespace="questionnaire")),
     path('member/', include('django.contrib.auth.urls')),
     path('test', questionnaire.views.test)
 ]

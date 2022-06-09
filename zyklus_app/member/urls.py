@@ -12,11 +12,11 @@ urlpatterns = [
     path('create_member', CreateMemberView.as_view(
         extra_context={'page_title': 'Neuer Benutzer'}), name='create_member'),
     path('member_list', MemberListView.as_view(
-        extra_context={'page_title': 'Member'}), name='member_list'),
+        extra_context={'page_title': 'Benutzerliste'}), name='member_list'),
     path('delete_member/<pk>', MemberDeleteView.as_view(
         extra_context={'page_title': 'Delete Member'}), name='delete_member'),
     path('member_detail/<pk>/', MemberDetailView.as_view(
-        extra_context={'page_title': 'Meine Pflanzen'}), name='member_detail'),
+        extra_context={'page_title': 'Benutzer'}), name='member_detail'),
     path('update_member/<pk>', MemberUpdateView.as_view(
         extra_context={'page_title': 'Edit Member'}), name='update_member'),
 ]
