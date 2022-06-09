@@ -15,9 +15,10 @@ import questionnaire.models
 # logs a user in
 def login_user(request):
     context = {'page_title': 'Login'}
+    context_logged_in = {'page_title': 'Test'}
 
     if request.user.is_authenticated:
-        return render(request, 'questionnaire/test.html')
+        return render(request, 'questionnaire/test.html', context_logged_in)
 
     if request.method == "POST":
         username = request.POST['username']
