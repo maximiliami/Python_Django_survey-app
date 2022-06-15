@@ -1,11 +1,10 @@
 import datetime
 
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
-
-from braces.views import LoginRequiredMixin, StaffuserRequiredMixin
 
 import questionnaire
 from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
@@ -57,16 +56,19 @@ def landing_page(request):
 
 
 # creates a new Pair
-class CreatePairView(StaffuserRequiredMixin, LoginRequiredMixin, CreateView):
+class CreatePairView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     model = questionnaire.models.Pair
     fields = ['ident']
     template_name = 'questionnaire/pair_form.html'
     success_url = 'pair_list'
     login_url = 'member:login'
 
+    def test_func(self):
+        return self.request.user.is_staff
+
 
 # shows a list of Pairs
-class PairListView(StaffuserRequiredMixin, LoginRequiredMixin, ListView):
+class PairListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
     model = questionnaire.models.Pair
     ordering = 'ident'
 
@@ -76,6 +78,9 @@ class PairListView(StaffuserRequiredMixin, LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['pseudo_user'] = pseudo_users
         return context
+
+    def test_func(self):
+        return self.request.user.is_staff
 
 
 # changes a Pair
@@ -89,13 +94,16 @@ class PairUpdateView(UpdateView):
 
 
 # confirm the deletion of a Pair
-class PairDeleteView(StaffuserRequiredMixin, LoginRequiredMixin, DeleteView):
+class PairDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
     model = questionnaire.models.Pair
     success_url = reverse_lazy('questionnaire:pair_list')
 
+    def test_func(self):
+        return self.request.user.is_staff
+
 
 # shows a selected Pair
-class PairDetailView(StaffuserRequiredMixin, LoginRequiredMixin, DetailView):
+class PairDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     model = questionnaire.models.Pair
     context_object_name = 'pair'
 
@@ -108,6 +116,9 @@ class PairDetailView(StaffuserRequiredMixin, LoginRequiredMixin, DetailView):
         if pseudo_users.count() >= 2:
             context['questionnaires_user_two'] = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_users[1])
         return context
+
+    def test_func(self):
+        return self.request.user.is_staff
 
 
 # creates a new DailyQuestionnaire
