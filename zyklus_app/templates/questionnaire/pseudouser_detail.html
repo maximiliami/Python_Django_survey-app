@@ -3,7 +3,9 @@
 
 {# Fills Block content #}
 {% block content %}
-    <h1>Pair: {{ object.ident }}</h1>
+    <h1>User: {{ pseudo_user }}</h1>
+
+    <p>Pair: {{ object.pair }}</p>
 
 
     <p>Superuser: {% if object.is_superuser %}
@@ -12,6 +14,10 @@
         Nein
     {% endif %}
     </p>
+    <p>Erster Fragebogen: {{ start_questionnaire.0 }}</p>
+    <p>Daily Fragebögen: {{ dq }}</p>
+    <p>Letzter Fragebogen: {{ end_questionnaire.0 }}</p>
+
 
     <a class="btn btn-primary btn-lg" href="{% url 'member:member_list' %}" role="button">Zurück</a>
 {% endblock %}

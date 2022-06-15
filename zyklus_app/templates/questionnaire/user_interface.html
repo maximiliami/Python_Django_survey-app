@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{# Fills Block content #}
+{% block content %}
+    <h1>Herzlich willkommen im User interface</h1>
+    <h2>{{ pseudo_user }}</h2>
+    <ul class="list-group">
+    </ul>
+    <h1>{{ pseudo_user.questionnaire_start }}</h1>
+{% endblock %}

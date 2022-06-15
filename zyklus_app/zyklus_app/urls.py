@@ -17,7 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 import member.views
-import questionnaire.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +24,4 @@ urlpatterns = [
     path('member/', include('member.urls', namespace="member")),
     path('questionnaire/', include('questionnaire.urls', namespace="questionnaire")),
     path('member/', include('django.contrib.auth.urls')),
-    path('test', questionnaire.views.test)
 ]

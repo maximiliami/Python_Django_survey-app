@@ -3,10 +3,25 @@
 
 {# Fills Block content #}
 {% block content %}
+
     <h1>Pair: {{ object.ident }}</h1>
-    {# TODO: Aus der DB holen #}
-    <p>PseudoUser 1: </p>
-    <p>PseudoUser 2: </p>
+    {% if pseudo_user.0 != Null %}
+        <p>Benutzer: {{ pseudo_user.0 }}</p>
+        {% for questionnaire in questionnaires_user_one %}
+            <p>{{ questionnaire }}</p>
+        {% endfor %}
+        {% else %}
+        <p>Benutzer: -</p>
+    {% endif %}
+    {% if pseudo_user.1 != Null %}
+        <p>Benutzer: {{ pseudo_user.1 }}</p>
+        {% for questionnaire in questionnaires_user_two %}
+            <p>{{ questionnaire }}</p>
+        {% endfor %}
+    {% else %}
+        <p>Benutzer: -</p>
+    {% endif %}
+
 
     <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
 {% endblock %}

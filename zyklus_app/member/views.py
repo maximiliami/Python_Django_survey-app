@@ -3,8 +3,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
-from django.utils import timezone
-
 
 # Create your views here.
 from braces.views import LoginRequiredMixin, StaffuserRequiredMixin
@@ -27,7 +25,7 @@ def login_user(request):
         if user is not None:
             login(request, user)
             messages.success(request, f"Welcome {username}")
-            return redirect('/test', context)
+            return redirect('questionnaire:landing_page')
         else:
             messages.error(request, "There was an error!")
             return redirect('/', context)
@@ -45,7 +43,7 @@ class CreateMemberView(StaffuserRequiredMixin, LoginRequiredMixin, CreateView):
     form_class = RegisterForm
     template_name = 'questionnaire/pseudouser_form.html'
     success_url = 'member_list'
-    login_url = 'login'
+    login_url = 'member:login'
 
 
 # shows a list of PseudoUser
@@ -65,8 +63,16 @@ class MemberDetailView(StaffuserRequiredMixin, LoginRequiredMixin, DetailView):
     model = questionnaire.models.PseudoUser
 
     def get_context_data(self, **kwargs):
+
+        daily_questionnaires = questionnaire.models.QuestionnaireDaily.objects.filter(pseudo_user__exact=self.object)
+        start_questionnaire = questionnaire.models.QuestionnaireStart.objects.filter(pseudo_user__exact=self.object)
+        end_questionnaire = questionnaire.models.QuestionnaireEnd.objects.filter(pseudo_user__exact=self.object)
+
         context = super().get_context_data(**kwargs)
-        context['now'] = timezone.now()
+        context['dq'] = len(daily_questionnaires)
+        context['start_questionnaire'] = start_questionnaire
+        context['end_questionnaire'] = end_questionnaire
+        context['pseudo_user'] = self.object
         return context
 
 

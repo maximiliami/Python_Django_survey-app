@@ -1,12 +1,11 @@
 {% extends 'base.html' %}
-
-{% load material_form %}
+{% load django_bootstrap5 %}
 
 {# Fills Block content #}
 {% block content %}
-    <form method="post">
-        {% form form=form %}
-        {% endform %}
+    <h1>Bitte füllen Sie Ihren täglichen Fragebogen aus:</h1>
+    <form method="post" class="form">
+        {% bootstrap_form form %}
         {% csrf_token %}
         <input class="btn btn-primary" type="submit" value="Speichern">
     </form>

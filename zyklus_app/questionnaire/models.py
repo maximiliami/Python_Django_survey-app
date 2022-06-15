@@ -1,5 +1,3 @@
-import datetime
-
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils import timezone
@@ -43,17 +41,19 @@ class Pair(models.Model):
         return self.ident
 
 
-class QuestionnaireStart(models.Model):
-    """Lookup Questionnaire"""
-    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
-                                                      default=0)
-    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+class PseudoUser(AbstractBaseUser, PermissionsMixin):
+    user_code = models.CharField(_('Persönlicher Code'), max_length=10, unique=True)
+    start_date = models.DateTimeField(default=timezone.now)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True, blank=True)
 
-    date = datetime.datetime.now()
+    objects = CustomAccountManager()
+
+    USERNAME_FIELD = 'user_code'
+
+    def __str__(self):
+        return self.user_code
 
 
 class QuestionnaireEnd(models.Model):
@@ -65,24 +65,28 @@ class QuestionnaireEnd(models.Model):
     question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    date = datetime.datetime.now()
-
-
-class PseudoUser(AbstractBaseUser, PermissionsMixin):
-    user_code = models.CharField(_('Persönlicher Code'), max_length=10, unique=True)
-    start_date = models.DateTimeField(default=timezone.now)
-    is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True)
-    questionnaire_start = models.OneToOneField(QuestionnaireStart, on_delete=models.CASCADE, null=True)
-    questionnaire_end = models.OneToOneField(QuestionnaireEnd, on_delete=models.CASCADE, null=True)
-
-    objects = CustomAccountManager()
-
-    USERNAME_FIELD = 'user_code'
+    pseudo_user = models.OneToOneField(PseudoUser, on_delete=models.CASCADE, null=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __str__(self):
-        return self.user_code
+        return f'{self.pseudo_user} {str(self.date.date())}'
+
+
+class QuestionnaireStart(models.Model):
+    """Lookup Questionnaire"""
+    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
+                                                      default=0)
+    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
+
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    pseudo_user = models.OneToOneField(PseudoUser, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'{self.pseudo_user} {str(self.date.date())}'
 
 
 class QuestionnaireDaily(models.Model):
@@ -94,6 +98,9 @@ class QuestionnaireDaily(models.Model):
     question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    date = datetime.datetime.now()
+    date = models.DateTimeField(auto_now_add=True, blank=True)
 
     pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'{self.pseudo_user} {str(self.date)}'

@@ -12,7 +12,8 @@ class UserAdminConfig(UserAdmin):
     list_filter = ('pair', 'is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('user_code', 'password')}),
-        ('Permissions', {'fields': ('groups', 'is_staff', 'is_active', 'is_superuser')}),
+        ('Permissions',
+         {'fields': ('groups', 'is_staff', 'is_active', 'is_superuser')}),
         ('Pair', {'fields': ('pair',)})
     )
     add_fieldsets = (
