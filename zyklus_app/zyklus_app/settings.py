@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     'questionnaire',
     'member',
     'django_bootstrap5',
-    'material'
 ]
 
 MIDDLEWARE = [
