@@ -71,21 +71,50 @@ def download(request, pk):
     writer = csv.writer(response)
     writer.writerow(
         ['Pärchen', 'Benutzer', 'Datum DailyQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5',
-         'Frage6', ])
+         'Frage6', 'Datum StartQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5', 'Frage6',
+         'Datum EndQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5', 'Frage6', ])
 
     if not pseudo_users:
         writer.writerow([pair.get(), '-', '-', '-', '-', '-', '-', '-', '-'])
 
     for pseudo_user in pseudo_users:
         questionnaires_daily = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_user)
-        print(questionnaires_daily)
+        questionnaire_start = QuestionnaireStart.objects.filter(pseudo_user__exact=pseudo_user)
+        questionnaire_end = QuestionnaireEnd.objects.filter(pseudo_user__exact=pseudo_user)
+
+        flag = False
+
+        if not questionnaire_end:
+            flag = True
+
         if not questionnaires_daily:
             writer.writerow([pair.get(), pseudo_user, '-', '-', '-', '-', '-', '-', '-'])
         for questionnaire_daily in questionnaires_daily:
-            writer.writerow([pair.get(), pseudo_user, questionnaire_daily.date.date(), questionnaire_daily.question_one,
-                             questionnaire_daily.question_two,
-                             questionnaire_daily.question_three, questionnaire_daily.question_four,
-                             questionnaire_daily.question_five, questionnaire_daily.question_six])
+            if not flag:
+                writer.writerow(
+                    [pair.get(), pseudo_user, questionnaire_daily.date.date(), questionnaire_daily.question_one,
+                     questionnaire_daily.question_two,
+                     questionnaire_daily.question_three, questionnaire_daily.question_four,
+                     questionnaire_daily.question_five, questionnaire_daily.question_six,
+                     questionnaire_start.get().date.date(), questionnaire_start.get().question_one,
+                     questionnaire_start.get().question_two, questionnaire_start.get().question_three,
+                     questionnaire_start.get().question_four, questionnaire_start.get().question_five,
+                     questionnaire_start.get().question_six, questionnaire_end.get().date.date(),
+                     questionnaire_end.get().question_one, questionnaire_end.get().question_two,
+                     questionnaire_end.get().question_three,
+                     questionnaire_end.get().question_four, questionnaire_end.get().question_five,
+                     questionnaire_end.get().question_six]),
+            else:
+                writer.writerow(
+                    [pair.get(), pseudo_user, questionnaire_daily.date.date(), questionnaire_daily.question_one,
+                     questionnaire_daily.question_two,
+                     questionnaire_daily.question_three, questionnaire_daily.question_four,
+                     questionnaire_daily.question_five, questionnaire_daily.question_six,
+                     questionnaire_start.get().date.date(), questionnaire_start.get().question_one,
+                     questionnaire_start.get().question_two, questionnaire_start.get().question_three,
+                     questionnaire_start.get().question_four, questionnaire_start.get().question_five,
+                     questionnaire_start.get().question_six, '-', '-', '-', '-', '-', '-', '-']),
+
     return response
 
 
