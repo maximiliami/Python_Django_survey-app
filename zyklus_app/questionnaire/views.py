@@ -1,13 +1,15 @@
+import csv
 import datetime
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 
 import questionnaire
-from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
+from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair
 
 
 # Create your views here.
@@ -53,6 +55,35 @@ def landing_page(request):
         # Todo render success page
         context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
         return render(request, 'questionnaire/success.html', context)
+
+
+# downloads the data of a pair
+@staff_member_required(login_url='questionnaire:landing_page')
+def download(request, pk):
+    pair = Pair.objects.filter(pk=pk)
+    pseudo_users = PseudoUser.objects.filter(pair__in=pair)
+
+    print(pair.get())
+
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{pair.get()}.csv"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(
+        ['Pärchen', 'Benutzer', 'Datum DailyQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5',
+         'Frage6', ])
+
+    for pseudo_user in pseudo_users:
+        questionnaires_daily = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_user)
+        for questionnaire_daily in questionnaires_daily:
+            writer.writerow([pair.get(), pseudo_user, questionnaire_daily.date, questionnaire_daily.question_one,
+                             questionnaire_daily.question_two,
+                             questionnaire_daily.question_three, questionnaire_daily.question_four,
+                             questionnaire_daily.question_five, questionnaire_daily.question_six])
+
+    return response
 
 
 # creates a new Pair

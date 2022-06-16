@@ -6,6 +6,7 @@ app_name = "questionnaire"
 
 urlpatterns = [
     path('create_pair', CreatePairView.as_view(extra_context={'page_title': 'Paar erstellen'}), name='create_pair'),
+    path('download/<pk>', download, name='download'),
     path('pair_list', PairListView.as_view(extra_context={'page_title': 'Paarliste'}), name='pair_list'),
     path('update_pair/<pk>', PairUpdateView.as_view(
         extra_context={'page_title': 'Paar ändern'}), name='update_pair'),

@@ -24,4 +24,6 @@
 
 
     <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
+    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:download' object.pk %}" role="button">Download</a>
+
 {% endblock %}
