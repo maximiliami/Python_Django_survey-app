@@ -6,8 +6,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 
 # Create your models here.
-class CustomAccountManager(BaseUserManager):
+from questionnaire import choices
 
+
+class CustomAccountManager(BaseUserManager):
     def create_superuser(self, user_code, password, **other_fields):
         other_fields.setdefault('is_superuser', True)
         other_fields.setdefault('is_staff', True)
@@ -47,7 +49,7 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True, blank=True)
-
+    gender = models.CharField(max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
     objects = CustomAccountManager()
 
     USERNAME_FIELD = 'user_code'

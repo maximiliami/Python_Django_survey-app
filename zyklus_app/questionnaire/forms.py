@@ -7,4 +7,4 @@ import questionnaire.models
 class RegisterForm(UserCreationForm):
     class Meta:
         model = questionnaire.models.PseudoUser
-        fields = ['user_code', 'pair']
+        fields = ['user_code', 'gender', 'pair']

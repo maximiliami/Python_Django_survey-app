@@ -3,21 +3,22 @@
 
 {# Fills Block content #}
 {% block content %}
-    <h1>User: {{ pseudo_user }}</h1>
+    <div class="container-fluid text-center">
+        <h1>User: {{ pseudo_user }}</h1>
 
-    <p>Pair: {{ object.pair }}</p>
-
-
-    <p>Superuser: {% if object.is_superuser %}
-        Ja
-    {% else %}
-        Nein
-    {% endif %}
-    </p>
-    <p>Erster Fragebogen: {{ start_questionnaire.0 }}</p>
-    <p>Daily Fragebögen: {{ dq }}</p>
-    <p>Letzter Fragebogen: {{ end_questionnaire.0 }}</p>
+        <p>Pair: {{ object.pair }}</p>
 
 
-    <a class="btn btn-primary btn-lg" href="{% url 'member:member_list' %}" role="button">Zurück</a>
+        <p>Superuser: {% if object.is_superuser %}
+            Ja
+        {% else %}
+            Nein
+        {% endif %}
+        </p>
+        <p>Erster Fragebogen: {{ start_questionnaire.0 }}</p>
+        <p>Daily Fragebögen: {{ dq }}</p>
+        <p>Letzter Fragebogen: {{ end_questionnaire.0 }}</p>
+
+        <a class="btn btn-primary btn-lg" href="{% url 'member:member_list' %}" role="button">Zurück</a>
+    </div>
 {% endblock %}
