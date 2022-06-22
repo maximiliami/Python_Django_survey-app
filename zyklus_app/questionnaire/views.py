@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 
 import questionnaire
 from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair
+from .forms import QuestionnaireStartForm
 
 
 # Create your views here.
@@ -210,13 +211,19 @@ class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
 
 class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
     model = questionnaire.models.QuestionnaireStart
-    fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
+    # fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
+    form_class = questionnaire.forms.QuestionnaireStartForm
     template_name = 'questionnaire/questionnaire_start_form.html'
     success_url = reverse_lazy('questionnaire:landing_page')
 
-    # fügt dem Formular den aufrufenden PseudoUser hinzu
+    # fügt dem Formular den aufrufenden PseudoUser hinzu und ändert das Gesxchlecht
     def form_valid(self, form):
+        print(form)
         form.instance.pseudo_user = self.request.user
+        pseudo_user = self.request.user
+        pseudo_user.gender = self.request.POST['gender']
+        print(self.request.POST['gender'])
+        pseudo_user.save()
         return super().form_valid(form)
 
     # Overrides the get method, view can only be called under certain conditions

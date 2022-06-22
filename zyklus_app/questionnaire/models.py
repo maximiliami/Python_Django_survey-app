@@ -37,7 +37,7 @@ class CustomAccountManager(BaseUserManager):
 
 class Pair(models.Model):
     """Forms a pair of persons"""
-    ident = models.CharField(max_length=10)
+    ident = models.CharField(_('Paar'), max_length=10)
 
     def __str__(self):
         return self.ident
@@ -49,7 +49,7 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     pair = models.ForeignKey(Pair, on_delete=models.CASCADE, null=True, blank=True)
-    gender = models.CharField(max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
+    gender = models.CharField(_('Geschlecht'), max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
     objects = CustomAccountManager()
 
     USERNAME_FIELD = 'user_code'
@@ -76,6 +76,7 @@ class QuestionnaireEnd(models.Model):
 
 class QuestionnaireStart(models.Model):
     """Lookup Questionnaire"""
+    gender = models.CharField(_('Geschlecht'), max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
     question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
     question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],

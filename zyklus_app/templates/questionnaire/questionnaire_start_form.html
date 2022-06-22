@@ -3,10 +3,53 @@
 
 {# Fills Block content #}
 {% block content %}
-    <h1>Bitte füllen Sie diesen "ersten" Fragebogen aus:</h1>
+    <div class="text-center">
+        <h1>Bitte füllen Sie diesen "ersten" Fragebogen aus:</h1>
+    </div>
+
     <form method="post" class="form">
-        {% bootstrap_form form %}
         {% csrf_token %}
-        <input class="btn btn-primary" type="submit" value="Speichern">
+        <div class="border position-relative m-4 p-5">
+            <div class="mx-auto">
+
+                <label class="mb-1" for="{{ form.gender.id_gender }}">Gender:</label>
+                {% bootstrap_field form.gender show_label=False %}
+
+
+                <label for="id_question_one" class="mt-2">I worry about being abandoned</label>
+                <input type="range" class="form-range mt-1 mb-0" min="0" max="7" id="id_question_one"
+                       name="question_one">
+                <p id="sliderHelp" class="form-text">0 absolutely worry about being abandoned to I absolutely worry
+                    not about
+                    being abandoned 7</p>
+
+                <label for="{{ form.question_two.auto_id }}" class="mt-2">I worry a lot about my relationships.</label>
+                <select class="form-select form-select-m mb-3" aria-label=".form-select-lg example"
+                        id="{{ form.question_two.auto_id }}" name="{{ form.question_two.name }}">
+                    <option value="0">Zero</option>
+                    <option value="1">1: wenig</option>
+                    <option value="2">2: wenig mehr</option>
+                    <option value="3">Three</option>
+                    <option value="4">Four</option>
+                    <option value="5">Five</option>
+                    <option value="6">Six</option>
+                    <option value="7">Seven</option>
+                </select>
+
+                <label for="id_question_one" class="mt-2">I worry that romantic partners wont care about me as much as I
+                    care about them</label>
+                {% bootstrap_field form.question_three show_label=False %}
+                <label for="id_question_one" class="mt-2">I worry a fair amount about losing my partner</label>
+                {% bootstrap_field form.question_four show_label=False %}
+                <label for="id_question_one" class="mt-2">I often wish that my partner's feelings for me were as strong
+                    as my feelings for him/her</label>
+                {% bootstrap_field form.question_five show_label=False %}
+                <label for="id_question_one" class="mt-2"> I often want to merge completely with romantic partners, and
+                    this sometimes scares them away</label>
+                {% bootstrap_field form.question_six show_label=False %}
+                <input class="btn btn-primary" type="submit" value="Speichern">
+            </div>
+        </div>
     </form>
 {% endblock %}
+
