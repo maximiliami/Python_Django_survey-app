@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+
 from .views import *
 
 # makes the app known in the application
@@ -7,8 +7,8 @@ app_name = "member"
 
 
 urlpatterns = [
-    path('login_user', views.login_user, name="login",),
-    path('logout_user', views.logout_view, name="logout"),
+    path('login_user', login_user, name="login",),
+    path('logout_user', logout_view, name="logout"),
     path('create_member', CreateMemberView.as_view(
         extra_context={'page_title': 'Neuer Benutzer'}), name='create_member'),
     path('member_list', MemberListView.as_view(
@@ -19,4 +19,5 @@ urlpatterns = [
         extra_context={'page_title': 'Benutzer'}), name='member_detail'),
     path('update_member/<pk>', MemberUpdateView.as_view(
         extra_context={'page_title': 'Edit Member'}), name='update_member'),
+    path('password', PasswordsChangeView.as_view(), name='password')
 ]

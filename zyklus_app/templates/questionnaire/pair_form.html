@@ -3,9 +3,13 @@
 
 {# Fills Block content #}
 {% block content %}
-    <form method="post" class="form">
-        {% bootstrap_form form %}
-        {% csrf_token %}
-        <input class="btn btn-primary" type="submit" value="Speichern">
-    </form>
+    <div class="border position-relative m-4 p-5 form-floating">
+        <div class="mx-auto">
+            <form method="post" class="form">
+                {% bootstrap_form form %}
+                {% csrf_token %}
+                <input class="btn btn-primary" type="submit" value="Speichern">
+            </form>
+        </div>
+    </div>
 {% endblock %}

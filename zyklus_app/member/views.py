@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
@@ -38,6 +39,17 @@ def logout_view(request):
     logout(request)
 
 
+# change password view
+class PasswordsChangeView(PasswordChangeView):
+    template_name = 'authenticate/change-password.html'
+    success_url = reverse_lazy('questionnaire:landing_page')
+    success_message = 'Passwort erfolgreich geändert'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Passwort erfolgreich geändert')
+        return super().form_valid(form)
+
+
 # creates a new PseudoUser
 class CreateMemberView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     form_class = RegisterForm
@@ -72,7 +84,6 @@ class MemberDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     model = questionnaire.models.PseudoUser
 
     def get_context_data(self, **kwargs):
-
         daily_questionnaires = questionnaire.models.QuestionnaireDaily.objects.filter(pseudo_user__exact=self.object)
         start_questionnaire = questionnaire.models.QuestionnaireStart.objects.filter(pseudo_user__exact=self.object)
         end_questionnaire = questionnaire.models.QuestionnaireEnd.objects.filter(pseudo_user__exact=self.object)

@@ -1,5 +1,6 @@
 import csv
 import datetime
+import itertools
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -41,7 +42,7 @@ def landing_page(request):
             return redirect('questionnaire:create_sq')
 
         # TODO Ablauf Zeit
-        if daily_questionnaires.count() <= 29:
+        if daily_questionnaires.count() <= 59:
             # tests whether a dq has already been created today
             if not daily_questionnaires.filter(date__contains=datetime.date.today(),
                                                date__startswith=datetime.date.today()):
@@ -115,6 +116,74 @@ def download(request, pk):
                      questionnaire_start.get().question_two, questionnaire_start.get().question_three,
                      questionnaire_start.get().question_four, questionnaire_start.get().question_five,
                      questionnaire_start.get().question_six, '-', '-', '-', '-', '-', '-', '-']),
+
+    return response
+
+
+# downloads the data of a pair excluding start- an end-questionnaire
+@staff_member_required(login_url='questionnaire:landing_page')
+def download_all_data(request):
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="Zyklus-qpp-data.csv"'},
+    )
+
+    writer = csv.writer(response)
+
+    pairs = Pair.objects.all()
+    pseudo_users = PseudoUser.objects.all()
+    start_questionnaires = QuestionnaireStart.objects.all()
+    daily_questionnaires = QuestionnaireDaily.objects.all()
+    end_questionnaires = QuestionnaireEnd.objects.all()
+
+    for pair in pairs:
+        pair_users = pseudo_users.filter(pair=pair)
+        print(f'pair_users = {pair_users.count()}')
+        if pair_users.count() == 2:
+            pair_user_one = pair_users[0]
+            pair_user_two = pair_users[1]
+
+            pair_user_one_questionnaires = daily_questionnaires.filter(pseudo_user__exact=pair_user_one)
+            pair_user_two_questionnaires = daily_questionnaires.filter(pseudo_user__exact=pair_user_two)
+
+            writer.writerow(
+                ['Pärchen', 'Benutzer1', 'Datum DailyQuestionnaire', f'F1 P1 {pair_user_one.gender}',
+                 f'F2 P1 {pair_user_one.gender}',
+                 f'F3 P1 {pair_user_one.gender}',
+                 f'F4 P1 {pair_user_one.gender}', f'F5 P1 {pair_user_one.gender}', f'F6 P1 {pair_user_one.gender}',
+                 'Benutzer2', 'Datum DailyQuestionnaire',
+                 f'F1 P2 {pair_user_two.gender} ', f'F2 P2 {pair_user_two.gender}', f'F3 P2 {pair_user_two.gender}',
+                 f'F4 P2 {pair_user_two.gender}', f'F5 P2 {pair_user_two.gender}', f'F6 P2 {pair_user_two.gender}'])
+
+            for (dq_user_one, dq_user_two) in itertools.zip_longest(pair_user_one_questionnaires,
+                                                                    pair_user_two_questionnaires):
+                print(f'(Ausgangswert: {dq_user_one}, {dq_user_two})')
+                if dq_user_one is None:
+                    dq_user_one = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
+                    dq_user_one.date = datetime.datetime.today()
+                    dq_user_one.question_one = 'Kein Wert'
+                    dq_user_one.question_two = 'Kein Wert'
+                    dq_user_one.question_three = 'Kein Wert'
+                    dq_user_one.question_four = 'Kein Wert'
+                    dq_user_one.question_five = 'Kein Wert'
+                    dq_user_one.question_six = 'Kein Wert'
+                if dq_user_two is None:
+                    dq_user_two = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
+                    dq_user_two.date = datetime.datetime.today()
+                    dq_user_two.question_one = 'Kein Wert'
+                    dq_user_two.question_two = 'Kein Wert'
+                    dq_user_two.question_three = 'Kein Wert'
+                    dq_user_two.question_four = 'Kein Wert'
+                    dq_user_two.question_five = 'Kein Wert'
+                    dq_user_two.question_six = 'Kein Wert'
+
+                print(f'({dq_user_two}, {dq_user_one})')
+                writer.writerow([pair.ident, pair_user_one.user_code, dq_user_one.date.date(),
+                                 dq_user_one.question_one, dq_user_one.question_two, dq_user_one.question_three,
+                                 dq_user_one.question_four, dq_user_one.question_five, dq_user_one.question_six,
+                                 pair_user_two.user_code, dq_user_two.date.date(), dq_user_two.question_one,
+                                 dq_user_two.question_two, dq_user_two.question_three, dq_user_two.question_four,
+                                 dq_user_two.question_five, dq_user_two.question_six])
 
     return response
 
