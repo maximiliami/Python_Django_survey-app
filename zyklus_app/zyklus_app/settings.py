@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'questionnaire',
     'member',
+    'service',
     'django_bootstrap5',
 ]
 

@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
 
 # Create your views here.
-from questionnaire.forms import RegisterForm
+from questionnaire.forms import RegisterForm, UpdateUserForm
 import questionnaire.models
 
 
@@ -61,6 +61,16 @@ class CreateMemberView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
         return self.request.user.is_staff
 
 
+# changes a PseudoUser
+class MemberUpdateView(UpdateView):
+    form_class = UpdateUserForm
+    model = questionnaire.models.PseudoUser
+    template_name_suffix = '_update_form'
+
+    def get_success_url(self):
+        return reverse_lazy('member:member_list')
+
+
 # shows a list of PseudoUser
 class MemberListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
     model = questionnaire.models.PseudoUser
@@ -97,13 +107,3 @@ class MemberDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
 
     def test_func(self):
         return self.request.user.is_staff
-
-
-# changes a PseudoUser
-class MemberUpdateView(UpdateView):
-    model = questionnaire.models.PseudoUser
-    fields = ['user_code', 'is_active', 'pair']
-    template_name_suffix = '_update_form'
-
-    def get_success_url(self):
-        return reverse_lazy('member:member_list')

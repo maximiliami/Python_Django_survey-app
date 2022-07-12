@@ -132,9 +132,7 @@ def download_all_data(request):
 
     pairs = Pair.objects.all()
     pseudo_users = PseudoUser.objects.all()
-    start_questionnaires = QuestionnaireStart.objects.all()
     daily_questionnaires = QuestionnaireDaily.objects.all()
-    end_questionnaires = QuestionnaireEnd.objects.all()
 
     for pair in pairs:
         pair_users = pseudo_users.filter(pair=pair)
