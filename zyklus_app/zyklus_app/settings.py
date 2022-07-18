@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'questionnaire',
     'member',
     'service',
+    'django_crontab',
     'django_bootstrap5',
 ]
 
@@ -127,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'de-DE'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Berlin'
 
 USE_I18N = True
 
@@ -150,3 +151,9 @@ STATICFILES_DIRS = [
 ]
 
 LOGOUT_REDIRECT_URL = "member:login"
+
+HOME = os.environ['HOME']
+
+CRONJOBS = [
+    ('* * * * *', 'service.cron.my_scheduled_job', f'>> {HOME}/cronlog.txt 2>&1'),
+]

@@ -1,4 +1,6 @@
-from questionnaire.models import PseudoUser, Pair
+import datetime
+import os
+from questionnaire.models import PseudoUser, Pair, QuestionnaireDaily
 
 
 class Service:
@@ -17,3 +19,21 @@ class Service:
             member_count = 0
 
         return Pair.objects.filter(ident__in=query_set)
+
+    @staticmethod
+    def test_cron():
+        flag = False
+        for user in PseudoUser.objects.all():
+            for dq in QuestionnaireDaily.objects.filter(pseudo_user__exact=user):
+                if dq.date == datetime.datetime.today():
+                    flag = True
+            if not flag:
+                new_dq = QuestionnaireDaily()
+                new_dq.pseudo_user = user
+                new_dq.save()
+            flag = False
+
+    HOME = os.environ['HOME']
+    f = open(f'{HOME}/cron_test.txt', 'w')
+    f.write(str(datetime.datetime.now()))
+    f.close()

@@ -59,5 +59,19 @@ services:
       MYSQL_USERNAME: webapp
       MYSQL_USERPASS: hopper
       DJANGO_DEBUG: 1
+  cron:
+    build: .
+    restart: unless-stopped
+    environment:
+      DB_ENGINE: django.db.backends.mysql
+      MYSQL_SERVER: db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: dbuwp
+      MYSQL_USERNAME: webapp
+      MYSQL_USERPASS: hopper
+      DJANGO_DEBUG: 1
+    links:
+      - db
+    command: cron -f
 volumes:
   dbvolume: {}
