@@ -60,7 +60,9 @@ services:
       MYSQL_USERPASS: hopper
       DJANGO_DEBUG: 1
   cron:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-cron
     restart: unless-stopped
     environment:
       DB_ENGINE: django.db.backends.mysql
@@ -72,6 +74,5 @@ services:
       DJANGO_DEBUG: 1
     links:
       - db
-    command: cron -f
 volumes:
   dbvolume: {}

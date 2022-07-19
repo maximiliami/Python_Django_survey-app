@@ -14,3 +14,5 @@ build:
   script:
     - docker build -t $IMAGE_TAG .
     - docker push $IMAGE_TAG
+    - docker build -f Dockerfile-cron -t $IMAGE_TAG-cron .
+    - docker push $IMAGE_TAG-cron
