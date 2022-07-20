@@ -22,18 +22,17 @@ class Service:
 
     @staticmethod
     def test_cron():
-        flag = False
-        for user in PseudoUser.objects.all():
-            for dq in QuestionnaireDaily.objects.filter(pseudo_user__exact=user):
-                if dq.date == datetime.datetime.today():
-                    flag = True
-            if not flag:
-                new_dq = QuestionnaireDaily()
-                new_dq.pseudo_user = user
-                new_dq.save()
-            flag = False
+        # flag = False
+        # for user in PseudoUser.objects.all():
+        #     for dq in QuestionnaireDaily.objects.filter(pseudo_user__exact=user):
+        #         if dq.date == datetime.datetime.today():
+        #             flag = True
+        # if not flag:
+        #     new_dq = QuestionnaireDaily()
+        #     new_dq.pseudo_user = user
+        #     new_dq.save()
 
-    HOME = os.environ['HOME']
-    f = open(f'{HOME}/cron_test.txt', 'w')
-    f.write(str(datetime.datetime.now()))
-    f.close()
+        home = os.environ['HOME']
+        f = open(f'{home}/cron_test.txt', 'w')
+        f.write(f'Die DB wurde um:{str(datetime.datetime.now())} Uhr geprüft')
+        f.close()
