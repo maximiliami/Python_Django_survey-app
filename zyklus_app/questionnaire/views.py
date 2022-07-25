@@ -1,16 +1,15 @@
-import csv
 import datetime
-import itertools
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect, HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 
 import questionnaire
-from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair
+from service.services import Service
+from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
 from .forms import QuestionnaireStartForm
 
 
@@ -41,7 +40,6 @@ def landing_page(request):
         if questionnaire_start is None:
             return redirect('questionnaire:create_sq')
 
-        # TODO Ablauf Zeit
         if daily_questionnaires.count() <= 59:
             # tests whether a dq has already been created today
             if not daily_questionnaires.filter(date__contains=datetime.date.today(),
@@ -61,129 +59,14 @@ def landing_page(request):
 
 # downloads the data of a pair
 @staff_member_required(login_url='questionnaire:landing_page')
-def download(request, pk):
-    pair = Pair.objects.filter(pk=pk)
-    pseudo_users = PseudoUser.objects.filter(pair__in=pair)
-
-    response = HttpResponse(
-        content_type='text/csv',
-        headers={'Content-Disposition': f'attachment; filename="{pair.get()}.csv"'},
-    )
-
-    writer = csv.writer(response)
-    writer.writerow(
-        ['Pärchen', 'Benutzer', 'Datum DailyQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5',
-         'Frage6', 'Datum StartQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5', 'Frage6',
-         'Datum EndQuestionnaire', 'Frage1', 'Frage2', 'Frage3', 'Frage4', 'Frage5', 'Frage6', ])
-
-    if not pseudo_users:
-        writer.writerow([pair.get(), '-', '-', '-', '-', '-', '-', '-', '-'])
-
-    for pseudo_user in pseudo_users:
-        questionnaires_daily = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_user)
-        questionnaire_start = QuestionnaireStart.objects.filter(pseudo_user__exact=pseudo_user)
-        questionnaire_end = QuestionnaireEnd.objects.filter(pseudo_user__exact=pseudo_user)
-
-        flag = False
-
-        if not questionnaire_end:
-            flag = True
-
-        if not questionnaires_daily:
-            writer.writerow([pair.get(), pseudo_user, '-', '-', '-', '-', '-', '-', '-'])
-        for questionnaire_daily in questionnaires_daily:
-            if not flag:
-                writer.writerow(
-                    [pair.get(), pseudo_user, questionnaire_daily.date.date(), questionnaire_daily.question_one,
-                     questionnaire_daily.question_two,
-                     questionnaire_daily.question_three, questionnaire_daily.question_four,
-                     questionnaire_daily.question_five, questionnaire_daily.question_six,
-                     questionnaire_start.get().date.date(), questionnaire_start.get().question_one,
-                     questionnaire_start.get().question_two, questionnaire_start.get().question_three,
-                     questionnaire_start.get().question_four, questionnaire_start.get().question_five,
-                     questionnaire_start.get().question_six, questionnaire_end.get().date.date(),
-                     questionnaire_end.get().question_one, questionnaire_end.get().question_two,
-                     questionnaire_end.get().question_three,
-                     questionnaire_end.get().question_four, questionnaire_end.get().question_five,
-                     questionnaire_end.get().question_six]),
-            else:
-                writer.writerow(
-                    [pair.get(), pseudo_user, questionnaire_daily.date.date(), questionnaire_daily.question_one,
-                     questionnaire_daily.question_two,
-                     questionnaire_daily.question_three, questionnaire_daily.question_four,
-                     questionnaire_daily.question_five, questionnaire_daily.question_six,
-                     questionnaire_start.get().date.date(), questionnaire_start.get().question_one,
-                     questionnaire_start.get().question_two, questionnaire_start.get().question_three,
-                     questionnaire_start.get().question_four, questionnaire_start.get().question_five,
-                     questionnaire_start.get().question_six, '-', '-', '-', '-', '-', '-', '-']),
-
-    return response
+def download_pair_data(request, pk):
+    return Service.download_data_service(pk)
 
 
 # downloads the data of a pair excluding start- an end-questionnaire
 @staff_member_required(login_url='questionnaire:landing_page')
 def download_all_data(request):
-    response = HttpResponse(
-        content_type='text/csv',
-        headers={'Content-Disposition': f'attachment; filename="Zyklus-qpp-data.csv"'},
-    )
-
-    writer = csv.writer(response)
-
-    pairs = Pair.objects.all()
-    pseudo_users = PseudoUser.objects.all()
-    daily_questionnaires = QuestionnaireDaily.objects.all()
-
-    for pair in pairs:
-        pair_users = pseudo_users.filter(pair=pair)
-        print(f'pair_users = {pair_users.count()}')
-        if pair_users.count() == 2:
-            pair_user_one = pair_users[0]
-            pair_user_two = pair_users[1]
-
-            pair_user_one_questionnaires = daily_questionnaires.filter(pseudo_user__exact=pair_user_one)
-            pair_user_two_questionnaires = daily_questionnaires.filter(pseudo_user__exact=pair_user_two)
-
-            writer.writerow(
-                ['Pärchen', 'Benutzer1', 'Datum DailyQuestionnaire', f'F1 P1 {pair_user_one.gender}',
-                 f'F2 P1 {pair_user_one.gender}',
-                 f'F3 P1 {pair_user_one.gender}',
-                 f'F4 P1 {pair_user_one.gender}', f'F5 P1 {pair_user_one.gender}', f'F6 P1 {pair_user_one.gender}',
-                 'Benutzer2', 'Datum DailyQuestionnaire',
-                 f'F1 P2 {pair_user_two.gender} ', f'F2 P2 {pair_user_two.gender}', f'F3 P2 {pair_user_two.gender}',
-                 f'F4 P2 {pair_user_two.gender}', f'F5 P2 {pair_user_two.gender}', f'F6 P2 {pair_user_two.gender}'])
-
-            for (dq_user_one, dq_user_two) in itertools.zip_longest(pair_user_one_questionnaires,
-                                                                    pair_user_two_questionnaires):
-                print(f'(Ausgangswert: {dq_user_one}, {dq_user_two})')
-                if dq_user_one is None:
-                    dq_user_one = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
-                    dq_user_one.date = datetime.datetime.today()
-                    dq_user_one.question_one = 'Kein Wert'
-                    dq_user_one.question_two = 'Kein Wert'
-                    dq_user_one.question_three = 'Kein Wert'
-                    dq_user_one.question_four = 'Kein Wert'
-                    dq_user_one.question_five = 'Kein Wert'
-                    dq_user_one.question_six = 'Kein Wert'
-                if dq_user_two is None:
-                    dq_user_two = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
-                    dq_user_two.date = datetime.datetime.today()
-                    dq_user_two.question_one = 'Kein Wert'
-                    dq_user_two.question_two = 'Kein Wert'
-                    dq_user_two.question_three = 'Kein Wert'
-                    dq_user_two.question_four = 'Kein Wert'
-                    dq_user_two.question_five = 'Kein Wert'
-                    dq_user_two.question_six = 'Kein Wert'
-
-                print(f'({dq_user_two}, {dq_user_one})')
-                writer.writerow([pair.ident, pair_user_one.user_code, dq_user_one.date.date(),
-                                 dq_user_one.question_one, dq_user_one.question_two, dq_user_one.question_three,
-                                 dq_user_one.question_four, dq_user_one.question_five, dq_user_one.question_six,
-                                 pair_user_two.user_code, dq_user_two.date.date(), dq_user_two.question_one,
-                                 dq_user_two.question_two, dq_user_two.question_three, dq_user_two.question_four,
-                                 dq_user_two.question_five, dq_user_two.question_six])
-
-    return response
+    return Service.download_data_service(None)
 
 
 # creates a new Pair
@@ -314,7 +197,7 @@ class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
 
     # Overrides the get method, view can only be called under certain conditions
     def get(self, *args, **kwargs):
-        if QuestionnaireDaily.objects.filter(pseudo_user__exact=self.request.user).count() < 30:
+        if QuestionnaireDaily.objects.filter(pseudo_user__exact=self.request.user).count() < 60:
             return redirect("questionnaire:landing_page")
         if QuestionnaireEnd.objects.filter(pseudo_user__exact=self.request.user).exists():
             return redirect("questionnaire:landing_page")
