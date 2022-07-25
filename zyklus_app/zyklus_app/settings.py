@@ -154,9 +154,6 @@ LOGOUT_REDIRECT_URL = "member:login"
 
 HOME = os.environ['HOME']
 
-# TODO Better place?! läuft so im local docker
-# CRONTAB_COMMAND_PREFIX = """DB_ENGINE=django.db.backends.mysql MYSQL_SERVER=db MYSQL_PORT=3306 MYSQL_DATABASE=dbuwp
-#  MYSQL_USERNAME=webapp MYSQL_USERPASS=hopper DJANGO_DEBUG=1"""
 CRONTAB_COMMAND_PREFIX = "DB_ENGINE=" + os.environ['DB_ENGINE'] +\
                          " MYSQL_SERVER=" + os.environ['MYSQL_SERVER'] +\
                          " MYSQL_PORT=" + os.environ['MYSQL_PORT'] +\
