@@ -4,7 +4,6 @@ import itertools
 import os
 
 from django.shortcuts import HttpResponse
-
 from questionnaire.models import PseudoUser, Pair, QuestionnaireDaily
 
 
