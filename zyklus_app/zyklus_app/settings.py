@@ -163,5 +163,5 @@ CRONTAB_COMMAND_PREFIX = "DB_ENGINE=" + os.environ['DB_ENGINE'] +\
                          " DJANGO_DEBUG=" + os.environ['DJANGO_DEBUG']
 
 CRONJOBS = [
-    ('25 09 * * *', 'service.cron.my_scheduled_job', f'>> {HOME}/cron_log.txt 2>&1'),
+    ('55 23 * * *', 'service.cron.my_scheduled_job', f'>> {HOME}/cron_log.txt 2>&1'),
 ]
