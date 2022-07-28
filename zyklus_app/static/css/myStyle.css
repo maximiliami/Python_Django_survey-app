@@ -98,7 +98,7 @@ body {
 
 @media(max-width: 420px) {
     .body{
-        padding-top: 100px;
+        padding-top: 50px;
     }
     .wrapper {
         margin: 100px 20px 20px;
