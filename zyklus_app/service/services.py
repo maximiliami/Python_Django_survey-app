@@ -30,15 +30,16 @@ class Service:
         for user in PseudoUser.objects.all():
             has_dq_for_today = False
             print(user)
-            for dq in QuestionnaireDaily.objects.filter(pseudo_user=user):
-                print(dq)
-                if dq.date.date() == datetime.date.today():
-                    has_dq_for_today = True
-            if not has_dq_for_today:
-                new_dq = QuestionnaireDaily()
-                new_dq.pseudo_user = user
-                new_dq.save()
-            print(has_dq_for_today)
+            if QuestionnaireDaily.objects.filter(pseudo_user=user) < Service.PERIOD:
+                for dq in QuestionnaireDaily.objects.filter(pseudo_user=user):
+                    print(dq)
+                    if dq.date.date() == datetime.date.today():
+                        has_dq_for_today = True
+                if not has_dq_for_today:
+                    new_dq = QuestionnaireDaily()
+                    new_dq.pseudo_user = user
+                    new_dq.save()
+                print(has_dq_for_today)
 
         f = open(os.environ['HOME'] + '/db_checkup.txt', 'w')
         f.write(f'Die DB wurde um:{str(datetime.datetime.now())} Uhr geprüft')
