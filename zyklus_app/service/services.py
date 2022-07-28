@@ -8,6 +8,7 @@ from questionnaire.models import PseudoUser, Pair, QuestionnaireDaily
 
 
 class Service:
+    PERIOD = 60
 
     # gets a querylist of pairs wich not have two participants
     @staticmethod

@@ -3,27 +3,29 @@
 
 {# Fills Block content #}
 {% block content %}
-
-    <h1>Pair: {{ object.ident }}</h1>
-    {% if pseudo_user.0 != Null %}
-        <p>Benutzer: {{ pseudo_user.0 }}</p>
-        {% for questionnaire in questionnaires_user_one %}
-            <p>{{ questionnaire }}</p>
-        {% endfor %}
+    <div class="text-center questionnaire-header">
+        <h1>Pair: {{ object.ident }}</h1>
+    </div>
+    <div class="text-center">
+        {% if pseudo_user.0 != Null %}
+            <p>Benutzer: {{ pseudo_user.0 }}</p>
+            {% for questionnaire in questionnaires_user_one %}
+                <p>{{ questionnaire }}</p>
+            {% endfor %}
+            {% else %}
+            <p>Benutzer: -</p>
+        {% endif %}
+        {% if pseudo_user.1 != Null %}
+            <p>Benutzer: {{ pseudo_user.1 }}</p>
+            {% for questionnaire in questionnaires_user_two %}
+                <p>{{ questionnaire }}</p>
+            {% endfor %}
         {% else %}
-        <p>Benutzer: -</p>
-    {% endif %}
-    {% if pseudo_user.1 != Null %}
-        <p>Benutzer: {{ pseudo_user.1 }}</p>
-        {% for questionnaire in questionnaires_user_two %}
-            <p>{{ questionnaire }}</p>
-        {% endfor %}
-    {% else %}
-        <p>Benutzer: -</p>
-    {% endif %}
+            <p>Benutzer: -</p>
+        {% endif %}
 
 
-    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
-    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:download' object.pk %}" role="button">Download</a>
-
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:download' object.pk %}" role="button">Download</a>
+    </div>
 {% endblock %}

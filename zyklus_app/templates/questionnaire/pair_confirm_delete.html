@@ -3,7 +3,9 @@
 
 {# Fills Block content #}
 {% block content %}
-    <p>Are you sure you want to delete "{{ object }}"</p>
+    <div class="text-center questionnaire-header">
+        <p>Are you sure you want to delete "{{ object }}"</p>
+    </div>
     <form method="post" class="form">
         {% bootstrap_form form %}
         {% csrf_token %}

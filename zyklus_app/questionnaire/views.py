@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
+from django.contrib import messages
 
 import questionnaire
 from service.services import Service
@@ -40,7 +41,7 @@ def landing_page(request):
         if questionnaire_start is None:
             return redirect('questionnaire:create_sq')
 
-        if daily_questionnaires.count() <= 59:
+        if daily_questionnaires.count() < Service.PERIOD:
             # tests whether a dq has already been created today
             if not daily_questionnaires.filter(date__contains=datetime.date.today(),
                                                date__startswith=datetime.date.today()):
@@ -144,6 +145,7 @@ class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
 
     # fügt dem Formular den aufrufenden PseudoUser hinzu
     def form_valid(self, form):
+        messages.success(self.request, f"Fragebogen gespeichert")
         form.instance.created_by = self.request.user
         form.instance.pseudo_user = self.request.user
         return super().form_valid(form)
@@ -174,6 +176,7 @@ class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
         pseudo_user.gender = self.request.POST['gender']
         print(self.request.POST['gender'])
         pseudo_user.save()
+        messages.success(self.request, f"Fragebogen gespeichert")
         return super().form_valid(form)
 
     # Overrides the get method, view can only be called under certain conditions
@@ -193,6 +196,7 @@ class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
     # fügt dem Formular den aufrufenden PseudoUser hinzu
     def form_valid(self, form):
         form.instance.pseudo_user = self.request.user
+        messages.success(self.request, f"Fragebogen gespeichert")
         return super().form_valid(form)
 
     # Overrides the get method, view can only be called under certain conditions
