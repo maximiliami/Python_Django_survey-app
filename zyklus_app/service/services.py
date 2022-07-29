@@ -32,7 +32,7 @@ class Service:
             print(f'User: {user}')
             if QuestionnaireDaily.objects.filter(pseudo_user__exact=user).count() < Service.PERIOD:
                 for dq in QuestionnaireDaily.objects.filter(pseudo_user__exact=user):
-                    print(f'Daily-questionnaires: {dq}')
+                    print(f'Daily-questionnaire: {dq.date.date()}')
                     if dq.date.date() == datetime.date.today():
                         print(f'dq-date: {dq.date.date()}, date today: {datetime.date.today()}')
                         has_dq_for_today = True
