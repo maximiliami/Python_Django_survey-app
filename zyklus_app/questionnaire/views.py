@@ -154,10 +154,19 @@ class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
     def get(self, *args, **kwargs):
         daily_questionnaires = QuestionnaireDaily.objects.filter(
             pseudo_user__exact=self.request.user)
+        start_questionnaire = QuestionnaireStart.objects.filter(
+            pseudo_user__exact=self.request.user)
 
+        for dq in daily_questionnaires:
+            if dq.date == datetime.date.today():
+                redirect("questionnaire:landing_page")
+
+        if start_questionnaire.count() == 0:
+            return redirect("questionnaire:landing_page")
         if not daily_questionnaires.filter(date__contains=datetime.date.today(),
                                            date__startswith=datetime.date.today()):
             return super(CreateDailyQuestionnaireView, self).get(*args, **kwargs)
+
         return redirect("questionnaire:landing_page")
 
 

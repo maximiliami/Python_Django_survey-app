@@ -1,11 +1,15 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
+{% load static %}
 
 {%  block content %}
 
     <div class="wrapper">
-        <div class="text-center mt-4 name">Zyklus-App</div>
-        <form class="p-3 mt-5" method="post">
+        <div class="logo">
+            <img src="{% static "/images/lotus.png" %}" alt="">
+        </div>
+        <div class="text-center mt-4 name">Login</div>
+        <form class="p-3 mt-5 login-form" method="post">
             {% csrf_token %}
             <div class="form-field d-flex justify-content-center">
                 <span class="fas fa-user"></span>

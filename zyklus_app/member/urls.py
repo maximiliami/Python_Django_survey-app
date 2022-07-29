@@ -7,6 +7,7 @@ app_name = "member"
 
 
 urlpatterns = [
+    path('', login_user, name="login",),
     path('login_user', login_user, name="login",),
     path('logout_user', logout_view, name="logout"),
     path('create_member', CreateMemberView.as_view(

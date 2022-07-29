@@ -17,7 +17,7 @@ def login_user(request):
     context_logged_in = {'page_title': 'Test'}
 
     if request.user.is_authenticated:
-        return render(request, 'questionnaire/test.html', context_logged_in)
+        return redirect('questionnaire:landing_page')
 
     if request.method == "POST":
         username = request.POST['username']
