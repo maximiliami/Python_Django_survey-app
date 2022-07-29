@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load django_bootstrap5 %}
-
+{% block head %}
+    <script language="javascript" type="text/javascript" src="{% static "/js/prevent_back.js" %}"></script>
+{% endblock %}
 {# Fills Block content #}
 {% block content %}
     <div class="text-center questionnaire-header">

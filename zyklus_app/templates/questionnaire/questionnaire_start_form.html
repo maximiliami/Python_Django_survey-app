@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
+{% load static %}
 
+{% block head %}
+    <script type="text/javascript" src="{% static "/js/prevent_back.js" %}"></script>
+{% endblock %}
 {# Fills Block content #}
 {% block content %}
     <div class="text-center questionnaire-header">
@@ -36,7 +40,7 @@
                     <option value="7">Seven</option>
                 </select>
 
-                <label for="id_question_one" class="mt-2">I worry that romantic partners wont care about me as much as I
+                <label for="id_question_one" class="mt-2">I worry that romantic partners won't care about me as much as I
                     care about them</label>
                 {% bootstrap_field form.question_three show_label=False %}
                 <label for="id_question_one" class="mt-2">I worry a fair amount about losing my partner</label>

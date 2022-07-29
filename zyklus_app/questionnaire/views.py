@@ -19,43 +19,46 @@ from .forms import QuestionnaireStartForm
 @login_required(login_url='/')
 def landing_page(request):
     # fetches the user from the database
-    pseudo_user = get_object_or_404(PseudoUser, pk=request.user.pk)
-    daily_questionnaires = QuestionnaireDaily.objects.filter(
-        pseudo_user__exact=request.user)  # fetches all DailyQuestionnaires of this user
+    if request.user.is_authenticated:
+        pseudo_user = get_object_or_404(PseudoUser, pk=request.user.pk)
+        daily_questionnaires = QuestionnaireDaily.objects.filter(
+            pseudo_user__exact=request.user)  # fetches all DailyQuestionnaires of this user
 
-    # fetches questionnaire_/ -start and -end
-    questionnaire_start = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)
-    if questionnaire_start.count() == 0:
-        questionnaire_start = None
-    questionnaire_end = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)
-    if questionnaire_end.count() == 0:
-        questionnaire_end = None
+        # fetches questionnaire_/ -start and -end
+        questionnaire_start = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)
+        if questionnaire_start.count() == 0:
+            questionnaire_start = None
+        questionnaire_end = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)
+        if questionnaire_end.count() == 0:
+            questionnaire_end = None
 
-    # render admin interface if Staff or Superuser
-    if request.user.is_superuser or request.user.is_staff:
-        context = {'page_title': 'Admin-interface'}
-        return render(request, 'questionnaire/admin_interface.html', context)
+        # render admin interface if Staff or Superuser
+        if request.user.is_superuser or request.user.is_staff:
+            context = {'page_title': 'Admin-interface'}
+            return admin_interface(request, context)
+        else:
+            # Program flow for normal users
+            # render create_sq if the Users questionnaire_start is None
+            if questionnaire_start is None:
+                return redirect('questionnaire:create_sq')
+
+            if daily_questionnaires.count() < Service.PERIOD:
+                # tests whether a dq has already been created today
+                if not daily_questionnaires.filter(date__contains=datetime.date.today(),
+                                                   date__startswith=datetime.date.today()):
+                    return redirect('questionnaire:create_dq')
+                else:
+                    context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
+                    return render(request, 'questionnaire/dq_already.html', context)
+
+            if questionnaire_end is None:
+                return redirect('questionnaire:create_eq')
+
+            # Todo render success page
+            context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
+            return render(request, 'questionnaire/success.html', context)
     else:
-        # Program flow for normal users
-        # render create_sq if the Users questionnaire_start is None
-        if questionnaire_start is None:
-            return redirect('questionnaire:create_sq')
-
-        if daily_questionnaires.count() < Service.PERIOD:
-            # tests whether a dq has already been created today
-            if not daily_questionnaires.filter(date__contains=datetime.date.today(),
-                                               date__startswith=datetime.date.today()):
-                return redirect('questionnaire:create_dq')
-            else:
-                context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
-                return render(request, 'questionnaire/dq_already.html', context)
-
-        if questionnaire_end is None:
-            return redirect('questionnaire:create_eq')
-
-        # Todo render success page
-        context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
-        return render(request, 'questionnaire/success.html', context)
+        return redirect('member:login')
 
 
 # downloads the data of a pair
@@ -68,6 +71,11 @@ def download_pair_data(request, pk):
 @staff_member_required(login_url='questionnaire:landing_page')
 def download_all_data(request):
     return Service.download_data_service(None)
+
+
+@login_required(login_url='questionnaire:landing_page')
+def admin_interface(request, context):
+    return render(request, 'questionnaire/admin_interface.html', context)
 
 
 # creates a new Pair

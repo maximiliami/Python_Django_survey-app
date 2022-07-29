@@ -5,13 +5,14 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DeleteView, DetailView, UpdateView, CreateView
-
+from django.views.decorators.cache import cache_control
 # Create your views here.
 from questionnaire.forms import RegisterForm, UpdateUserForm
 import questionnaire.models
 
 
 # logs a user in
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def login_user(request):
     context = {'page_title': 'Login'}
     context_logged_in = {'page_title': 'Test'}
@@ -35,8 +36,10 @@ def login_user(request):
 
 
 # logs a user out
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_view(request):
     logout(request)
+    return render(request, 'authenticate/login.html')
 
 
 # change password view
