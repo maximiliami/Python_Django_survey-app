@@ -9,7 +9,8 @@ app_name = "member"
 urlpatterns = [
     path('', login_user, name="login",),
     path('login_user', login_user, name="login",),
-    path('logout_user', logout_view, name="logout"),
+    path('logout_view', logout_view, name="logout_view"),
+    path('logout_user', logout_user, name='logout_user'),
     path('create_member', CreateMemberView.as_view(
         extra_context={'page_title': 'Neuer Benutzer'}), name='create_member'),
     path('member_list', MemberListView.as_view(

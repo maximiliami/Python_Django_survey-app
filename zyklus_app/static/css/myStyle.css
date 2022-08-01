@@ -72,6 +72,21 @@ body {
     background-color: #039BE5;
 }
 
+.btn.btn-primary.align-middle.mt-2{
+    width: 100%;
+    height: 40px;
+    background-color: #03A9F4;
+    color: #fff;
+    border-radius: 25px;
+    box-shadow: 3px 3px 3px #b1b1b1,
+    -3px -3px 3px #fff;
+    letter-spacing: 0.2rem;
+}
+
+.btn.btn-primary.align-middle.mt-2:hover{
+    background-color: #039BE5;
+}
+
 .wrapper a {
     text-decoration: none;
     font-size: 0.8rem;
@@ -137,8 +152,6 @@ body {
         margin-top: 30px;
     }
 }
-
-
 
 .font-white {
     color: white;

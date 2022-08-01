@@ -39,7 +39,12 @@ def login_user(request):
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def logout_view(request):
     logout(request)
-    return render(request, 'authenticate/login.html')
+    return redirect('member:login')
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def logout_user(request):
+    return render(request, 'authenticate/logout.html')
 
 
 # change password view
