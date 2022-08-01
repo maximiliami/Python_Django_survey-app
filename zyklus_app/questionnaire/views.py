@@ -5,6 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.decorators.cache import never_cache
+from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib import messages
 
@@ -145,6 +147,7 @@ class PairDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
 
 
 # creates a new DailyQuestionnaire
+@method_decorator([never_cache, login_required], name='dispatch')
 class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
     model = questionnaire.models.QuestionnaireDaily
     fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
@@ -178,6 +181,7 @@ class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
         return redirect("questionnaire:landing_page")
 
 
+@method_decorator([never_cache, login_required], name='dispatch')
 class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
     model = questionnaire.models.QuestionnaireStart
     # fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
@@ -204,6 +208,7 @@ class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
             return super(CreateStartQuestionnaireView, self).get(*args, **kwargs)
 
 
+@method_decorator([never_cache, login_required], name='dispatch')
 class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
     model = questionnaire.models.QuestionnaireEnd
     fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
