@@ -4,7 +4,7 @@ from questionnaire.views import *
 app_name = "questionnaire"
 
 urlpatterns = [
-    path('create_pair', CreatePairView.as_view(extra_context={'page_title': 'Paar erstellen'}), name='create_pair'),
+    path('create_pair', CreatePairView.as_view(extra_context={'page_title': 'Neues Paar'}), name='create_pair'),
     path('download/<pk>', download_pair_data, name='download'),
     path('download_all_data', download_all_data, name='download_all_data'),
     path('pair_list', PairListView.as_view(extra_context={'page_title': 'Paarliste'}), name='pair_list'),

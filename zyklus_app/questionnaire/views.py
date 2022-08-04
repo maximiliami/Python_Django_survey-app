@@ -64,7 +64,7 @@ def landing_page(request):
                         lq = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)[0].date
                     else:
                         lq = 'Noch nicht abgeschlossen'
-                    context = {'page_title': 'Vielen Dank!',
+                    context = {'page_title': 'User Interface',
                                'pseudo_user': pseudo_user,
                                'dq_count': dq_count,
                                'sq': sq,
