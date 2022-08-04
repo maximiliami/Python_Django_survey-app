@@ -12,7 +12,7 @@ from django.contrib import messages
 
 import questionnaire
 from service.services import Service
-from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
+from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair
 from .forms import QuestionnaireStartForm
 
 
@@ -36,7 +36,9 @@ def landing_page(request):
 
         # render admin interface if Staff or Superuser
         if request.user.is_superuser or request.user.is_staff:
-            context = {'page_title': 'Admin-interface'}
+            members = PseudoUser.objects.all()
+            pairs = Pair.objects.all()
+            context = {'page_title': 'Admin-interface', 'members': members, 'pairs': pairs}
             return admin_interface(request, context)
         else:
             # Program flow for normal users

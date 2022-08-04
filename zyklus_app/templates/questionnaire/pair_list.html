@@ -4,26 +4,31 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
-{%  block content %}
-    <table class="table table-dark table-striped">
-        <thead class="table table-dark">
-        <tr>
-            <th scope="col">Pair-Code</th>
-            <th scope="col">Anzeigen</th>
-            <th scope="col">Editieren</th>
-            <th scope="col">Löschen</th>
-        </tr>
-        </thead>
-
-        {% for pair in object_list %}
+{% block content %}
+    <div class="border position-relative m-4 p-5 form-floating">
+        <table class="table table-dark table-striped">
+            <thead class="table table-dark">
             <tr>
-                <td>{{ pair.ident }}</td>
-                <td><a href="{{ 'pair_detail/' }} {{ pair.id }}" class="btn btn-primary btn-sm align-middle">Anzeigen</a></td>
-                <td><a href="{{ 'update_pair/' }} {{ pair.id }}" class="btn btn-primary btn-sm align-middle">Editieren</a></td>
-                <td><a href="{{ 'delete_pair/' }} {{ pair.id }}" class="btn btn-danger btn-sm align-middle">Löschen</a></td>
+                <th scope="col">Pair-Code</th>
+                <th scope="col">Anzeigen</th>
+                <th scope="col">Editieren</th>
+                <th scope="col">Löschen</th>
             </tr>
-        {% endfor %}
+            </thead>
 
-    </table>
-    <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+            {% for pair in object_list %}
+                <tr>
+                    <td>{{ pair.ident }}</td>
+                    <td><a href="{{ 'pair_detail/' }} {{ pair.id }}" class="btn btn-primary btn-sm align-middle">Anzeigen</a>
+                    </td>
+                    <td><a href="{{ 'update_pair/' }} {{ pair.id }}" class="btn btn-primary btn-sm align-middle">Editieren</a>
+                    </td>
+                    <td><a href="{{ 'delete_pair/' }} {{ pair.id }}"
+                           class="btn btn-danger btn-sm align-middle">Löschen</a></td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+    </div>
 {% endblock %}

@@ -4,11 +4,13 @@
 {# Fills Block content #}
 {% block content %}
     <div class="text-center questionnaire-header">
-        <p>Are you sure you want to delete "{{ object }}"</p>
+        <div class="border position-relative m-4 p-5 form-floating text-center">
+            <p>Möchtest du <b>"{{ object }}"</b> wirklich löschen?</p>
+        <form method="post" class="form">
+            {% bootstrap_form form %}
+            {% csrf_token %}
+            <input class="btn btn-danger" type="submit" value="Löschen">
+        </form>
+        </div>
     </div>
-    <form method="post" class="form">
-        {% bootstrap_form form %}
-        {% csrf_token %}
-        <input class="btn btn-danger" type="submit" value="Löschen">
-    </form>
 {% endblock %}
