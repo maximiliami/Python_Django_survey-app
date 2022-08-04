@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'service',
     'django_crontab',
     'django_bootstrap5',
-    'webpush'
+    'webpush',
+    'pwa'
 ]
 
 MIDDLEWARE = [
@@ -155,12 +156,13 @@ LOGOUT_REDIRECT_URL = "member:login"
 
 HOME = os.environ['HOME']
 
-CRONTAB_COMMAND_PREFIX = "DB_ENGINE=" + os.environ['DB_ENGINE'] +\
-                         " MYSQL_SERVER=" + os.environ['MYSQL_SERVER'] +\
-                         " MYSQL_PORT=" + os.environ['MYSQL_PORT'] +\
-                         " MYSQL_DATABASE=" + os.environ['MYSQL_DATABASE'] +\
-                         " MYSQL_USERNAME=" + os.environ['MYSQL_USERNAME'] +\
-                         " MYSQL_USERPASS=" + os.environ['MYSQL_USERPASS'] +\
+# Cron
+CRONTAB_COMMAND_PREFIX = "DB_ENGINE=" + os.environ['DB_ENGINE'] + \
+                         " MYSQL_SERVER=" + os.environ['MYSQL_SERVER'] + \
+                         " MYSQL_PORT=" + os.environ['MYSQL_PORT'] + \
+                         " MYSQL_DATABASE=" + os.environ['MYSQL_DATABASE'] + \
+                         " MYSQL_USERNAME=" + os.environ['MYSQL_USERNAME'] + \
+                         " MYSQL_USERPASS=" + os.environ['MYSQL_USERPASS'] + \
                          " DJANGO_DEBUG=" + os.environ['DJANGO_DEBUG']
 
 CRONJOBS = [
@@ -169,8 +171,40 @@ CRONJOBS = [
     ('0 17 * * *', 'service.cron.my_scheduled_job_1', f'>> {HOME}/cron_log.txt 2>&1'),
 ]
 
+# Web-push
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": "BA9LhuPa1jv1CSCLucsNMoHUaKDoIvUAoxj0lk3PVEe8N96HXNe83jJfJrjHCNlNMYCN0a_IXF1tWaMsWDiF25g",
     "VAPID_PRIVATE_KEY": "QPW0b-30xfGA26Bo5xmWNobGLSDaaYx0UYFcrJdr9sc",
     "VAPID_ADMIN_EMAIL": "maximilian.rupprecht@stud.th-luebeck.de"
 }
+
+# Pwa
+PWA_APP_NAME = 'Zyklus-App'
+PWA_APP_DESCRIPTION = "Thank you for participating"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/lotus.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/my_apple_icon.png',
+        'sizes': '160x160'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/icons/splash-640x1136.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'

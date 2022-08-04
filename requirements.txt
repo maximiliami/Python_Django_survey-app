@@ -9,6 +9,7 @@ Django==4.0.3
 django-bootstrap5==21.3
 django-crontab==0.7.1
 django-material==1.10.0
+django-pwa @ git+https://github.com/silviolleite/django-pwa@4eb4ae616f8671f85bb05156500d0814c6c4a3fe
 django-webpush==0.3.4
 http-ece==1.1.0
 idna==3.3

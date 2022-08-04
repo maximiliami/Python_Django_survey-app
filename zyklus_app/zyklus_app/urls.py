@@ -25,5 +25,6 @@ urlpatterns = [
     path('questionnaire/', include('questionnaire.urls', namespace="questionnaire")),
     path('member/', include('django.contrib.auth.urls')),
     path('service/', include('service.urls', namespace="service")),
-    re_path(r'^webpush/', include('webpush.urls'))
+    re_path(r'^webpush/', include('webpush.urls')),
+    re_path('', include('pwa.urls')),
 ]
