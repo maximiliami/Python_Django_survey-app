@@ -57,11 +57,11 @@ def landing_page(request):
                     else:
                         dq_count = 0
                     if QuestionnaireStart.objects.filter(pseudo_user__exact=request.user):
-                        sq = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)[0].date
+                        sq = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)[0].date.date()
                     else:
                         sq = 'Noch nicht abgeschlossen'
                     if QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user):
-                        lq = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)[0].date
+                        lq = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)[0].date.date()
                     else:
                         lq = 'Noch nicht abgeschlossen'
                     context = {'page_title': 'User Interface',
@@ -128,6 +128,7 @@ class PairListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
 
 
 # changes a Pair
+@method_decorator(login_required, name='dispatch')
 class PairUpdateView(UpdateView):
     model = questionnaire.models.Pair
     fields = ['ident']
