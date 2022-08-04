@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'service',
     'django_crontab',
     'django_bootstrap5',
+    'webpush'
 ]
 
 MIDDLEWARE = [
@@ -164,4 +165,12 @@ CRONTAB_COMMAND_PREFIX = "DB_ENGINE=" + os.environ['DB_ENGINE'] +\
 
 CRONJOBS = [
     ('55 21 * * *', 'service.cron.my_scheduled_job', f'>> {HOME}/cron_log.txt 2>&1'),
+    ('0 7 * * *', 'service.cron.my_scheduled_job_1', f'>> {HOME}/cron_log.txt 2>&1'),
+    ('0 17 * * *', 'service.cron.my_scheduled_job_1', f'>> {HOME}/cron_log.txt 2>&1'),
 ]
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "BA9LhuPa1jv1CSCLucsNMoHUaKDoIvUAoxj0lk3PVEe8N96HXNe83jJfJrjHCNlNMYCN0a_IXF1tWaMsWDiF25g",
+    "VAPID_PRIVATE_KEY": "QPW0b-30xfGA26Bo5xmWNobGLSDaaYx0UYFcrJdr9sc",
+    "VAPID_ADMIN_EMAIL": "maximilian.rupprecht@stud.th-luebeck.de"
+}

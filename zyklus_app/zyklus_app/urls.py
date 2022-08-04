@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 
 import member.views
 
@@ -24,4 +24,6 @@ urlpatterns = [
     path('member/', include('member.urls', namespace="member")),
     path('questionnaire/', include('questionnaire.urls', namespace="questionnaire")),
     path('member/', include('django.contrib.auth.urls')),
+    path('service/', include('service.urls', namespace="service")),
+    re_path(r'^webpush/', include('webpush.urls'))
 ]

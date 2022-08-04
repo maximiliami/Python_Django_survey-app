@@ -5,6 +5,7 @@ import os
 
 from django.shortcuts import HttpResponse
 from questionnaire.models import PseudoUser, Pair, QuestionnaireDaily
+from webpush import send_group_notification
 
 
 class Service:
@@ -119,3 +120,11 @@ class Service:
                                      dq_user_two.question_five, dq_user_two.question_six])
 
         return this_response
+
+    @staticmethod
+    def notify_via_webpush():
+        payload = {"head": "Erinnerung",
+                   "body": "Hast du deinen Fragebogen heute bereits ausgefüllt?",
+                   "icon": "/static/images/lotus.png",
+                   "url": "https://zyklus-app.project.mylab.th-luebeck.de/"}
+        send_group_notification("daily", payload=payload, ttl=1000)

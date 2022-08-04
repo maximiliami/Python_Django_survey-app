@@ -128,6 +128,7 @@ class PairDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 
 # shows a selected Pair
+@method_decorator(login_required, name='dispatch')
 class PairDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     model = questionnaire.models.Pair
     context_object_name = 'pair'
@@ -189,9 +190,8 @@ class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
     template_name = 'questionnaire/questionnaire_start_form.html'
     success_url = reverse_lazy('questionnaire:landing_page')
 
-    # fügt dem Formular den aufrufenden PseudoUser hinzu und ändert das Gesxchlecht
+    # fügt dem Formular den aufrufenden PseudoUser hinzu und ändert das Geschlecht
     def form_valid(self, form):
-        print(form)
         form.instance.pseudo_user = self.request.user
         pseudo_user = self.request.user
         pseudo_user.gender = self.request.POST['gender']
