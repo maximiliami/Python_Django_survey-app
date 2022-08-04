@@ -52,7 +52,24 @@ def landing_page(request):
                                                    date__startswith=datetime.date.today()):
                     return redirect('questionnaire:create_dq')
                 else:
-                    context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
+                    if QuestionnaireDaily.objects.filter(pseudo_user__exact=request.user).count() != 0:
+                        dq_count = QuestionnaireDaily.objects.filter(pseudo_user__exact=request.user).count()
+                    else:
+                        dq_count = 0
+                    if QuestionnaireStart.objects.filter(pseudo_user__exact=request.user):
+                        sq = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)[0].date
+                    else:
+                        sq = 'Noch nicht abgeschlossen'
+                    if QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user):
+                        lq = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)[0].date
+                    else:
+                        lq = 'Noch nicht abgeschlossen'
+                    context = {'page_title': 'Vielen Dank!',
+                               'pseudo_user': pseudo_user,
+                               'dq_count': dq_count,
+                               'sq': sq,
+                               'lq': lq,
+                               }
                     return render(request, 'questionnaire/dq_already.html', context)
 
             if questionnaire_end is None:

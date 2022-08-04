@@ -2,7 +2,26 @@
 
 {% block content %}
     <div class="text-center questionnaire-header">
-        <h1>Vielen Dank, Sie haben Ihren Beitrag heute bereits geleistet</h1>
+        <h1>Herzlich willkommen im User Interface</h1>
+        <p>Vielen Dank, Sie haben Ihren Beitrag heute bereits geleistet</p>
+        <div class="border position-relative m-4 p-5 form-floating">
+            <h3 class="mb-3">{{ pseudo_user }}</h3>
+            {% if dq_count != 0 %}
+                <p>Tägliche Fragebögen: <b>{{ dq_count }}</b></p>
+            {% else %}
+                <p>Tägliche Fragebögen: <b>Noch kein Fragebogen</b></p>
+            {% endif %}
+            {% if not sq %}
+                <p>Kein erster Fragebogen</p>
+            {% else %}
+                <p>Erster Fragebogen: <b>{{ sq }}</b></p>
+            {% endif %}
+            {% if not lq %}
+                <p>Kein letzter Fragebogen</p>
+            {% else %}
+                <p>Letzter Fragebogen: <b>{{ lq }}</b></p>
+            {% endif %}
+        </div>
     </div>
 
 {% endblock %}
