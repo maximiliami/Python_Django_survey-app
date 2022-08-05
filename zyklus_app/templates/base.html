@@ -19,41 +19,45 @@
 {% block nav %}
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'questionnaire:landing_page' %}">Zyklus-App</a>
+
+            <a class="navbar-brand" href="{% url 'questionnaire:landing_page' %}">
+                <img src="{% static "/images/lotus.png" %}" alt="" width="30" height="24"
+                     class="d-inline-block align-text-top"> Zyklus-App
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                {% if user.is_authenticated and not user.is_superuser %}
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'member:password' %}">Passwort
-                            ändern</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'service:subscribe' %}">Erinnerung</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'member:logout_user' %}">Logout</a>
-                    </li>
-                {% endif %}
-                {% if user.is_superuser or user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'member:create_member' %}">Benutzer anlegen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'questionnaire:create_pair' %}" tabindex="-1">Paar
-                            anlegen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'questionnaire:download_all_data' %}"
-                           tabindex="-1">Download csv</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'member:logout_user' %}">Logout</a>
-                    </li>
-                {% endif %}
+                    {% if user.is_authenticated and not user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="{% url 'member:password' %}">Passwort
+                                ändern</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="{% url 'service:subscribe' %}">Erinnerung</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="{% url 'member:logout_user' %}">Logout</a>
+                        </li>
+                    {% endif %}
+                    {% if user.is_superuser or user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'member:create_member' %}">Benutzer anlegen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questionnaire:create_pair' %}" tabindex="-1">Paar
+                                anlegen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'questionnaire:download_all_data' %}"
+                               tabindex="-1">Download csv</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="{% url 'member:logout_user' %}">Logout</a>
+                        </li>
+                    {% endif %}
                 </ul>
 
             </div>
