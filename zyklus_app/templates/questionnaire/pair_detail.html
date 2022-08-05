@@ -5,24 +5,22 @@
 {% block content %}
     <div class="text-center questionnaire-header">
         <div class="border position-relative m-4 p-5 form-floating">
-            <h1>Pair: {{ object.ident }}</h1>
+            <h1>{{ object.ident }}</h1>
             {% if pseudo_user.0 != Null %}
-                <p>Benutzer: {{ pseudo_user.0 }}</p>
+                <p>Benutzer: <b>{{ pseudo_user.0 }}</b></p>
             {% else %}
-                <p>Benutzer: -</p>
+                <p>Benutzer: <b>-</b></p>
             {% endif %}
             {% if pseudo_user.1 != Null %}
-                <p>Benutzer: {{ pseudo_user.1 }}</p>
+                <p>Benutzer: <b>{{ pseudo_user.1 }}</b></p>
             {% else %}
-                <p>Benutzer: -</p>
+                <p>Benutzer: <b>-</b></p>
             {% endif %}
 
-
-            <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:pair_list' %}" role="button">Zurück</a>
-            <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:download' object.pk %}"
+            <a class="btn btn-primary btn-lg mt-1" href="{% url 'questionnaire:download' object.pk %}"
                role="button">Download</a>
-            <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:update_pair' object.pk %}" role="button">Editieren</a>
-            <a class="btn btn-primary btn-danger btn-lg" href="{% url 'questionnaire:delete_pair' object.pk %}"
+            <a class="btn btn-primary btn-lg mt-1" href="{% url 'questionnaire:update_pair' object.pk %}" role="button">Editieren</a>
+            <a class="btn btn-primary btn-danger btn-lg mt-1" href="{% url 'questionnaire:delete_pair' object.pk %}"
                role="button">löschen</a>
         </div>
     </div>
