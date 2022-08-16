@@ -48,6 +48,7 @@ if 'DJANGO_HOST' in os.environ:
 
 # Application definition
 
+# zyklus_app/settings.py
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

@@ -37,7 +37,7 @@ class CustomAccountManager(BaseUserManager):
 
 class Pair(models.Model):
     """Forms a pair of persons"""
-    ident = models.CharField(_('Paar'), max_length=10)
+    ident = models.CharField(_('Paar'), max_length=10, unique=True)
 
     def __str__(self):
         return self.ident
