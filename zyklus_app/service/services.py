@@ -38,7 +38,8 @@ class Service:
                         print(f'dq-date: {dq.date.date()}, date today: {datetime.date.today()}')
                         has_dq_for_today = True
                 if not has_dq_for_today:
-                    new_dq = QuestionnaireDaily()
+                    new_dq = QuestionnaireDaily('Kein Wert', 'Kein Wert', 'Kein Wert', 'Kein Wert', 'Kein Wert',
+                                                'Kein Wert', 'Kein Wert')
                     new_dq.pseudo_user = user
                     new_dq.save()
                 print(has_dq_for_today)
