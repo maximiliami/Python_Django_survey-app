@@ -8,7 +8,7 @@ from django.views.generic import ListView, DeleteView, DetailView, UpdateView, C
 from django.views.decorators.cache import cache_control
 # Create your views here.
 from questionnaire.forms import RegisterForm, UpdateUserForm
-import questionnaire.models
+from questionnaire.models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
 
 
 # logs a user in
@@ -72,7 +72,7 @@ class CreateMemberView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 # changes a PseudoUser
 class MemberUpdateView(UpdateView):
     form_class = UpdateUserForm
-    model = questionnaire.models.PseudoUser
+    model = PseudoUser
     template_name_suffix = '_update_form'
 
     def get_success_url(self):
@@ -81,7 +81,7 @@ class MemberUpdateView(UpdateView):
 
 # shows a list of PseudoUser
 class MemberListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
-    model = questionnaire.models.PseudoUser
+    model = PseudoUser
     ordering = 'user_code'
 
     def test_func(self):
@@ -90,7 +90,7 @@ class MemberListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
 
 # confirm the deletion of a PseudoUser
 class MemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
-    model = questionnaire.models.PseudoUser
+    model = PseudoUser
     success_url = reverse_lazy('member:member_list')
 
     def test_func(self):
@@ -99,12 +99,12 @@ class MemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 # shows a selected PseudoUser
 class MemberDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
-    model = questionnaire.models.PseudoUser
+    model = PseudoUser
 
     def get_context_data(self, **kwargs):
-        daily_questionnaires = questionnaire.models.QuestionnaireDaily.objects.filter(pseudo_user__exact=self.object)
-        start_questionnaire = questionnaire.models.QuestionnaireStart.objects.filter(pseudo_user__exact=self.object)
-        end_questionnaire = questionnaire.models.QuestionnaireEnd.objects.filter(pseudo_user__exact=self.object)
+        daily_questionnaires = QuestionnaireDaily.objects.filter(pseudo_user__exact=self.object)
+        start_questionnaire = QuestionnaireStart.objects.filter(pseudo_user__exact=self.object)
+        end_questionnaire = QuestionnaireEnd.objects.filter(pseudo_user__exact=self.object)
 
         context = super().get_context_data(**kwargs)
         context['dq'] = len(daily_questionnaires)

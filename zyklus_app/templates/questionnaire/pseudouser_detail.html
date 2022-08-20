@@ -19,8 +19,17 @@
             {% endif %}
             </p>
             <p>Daily Fragebögen: <b>{{ dq }}</b></p>
+        {% if start_questionnaire %}
             <p>Erster Fragebogen: <b>{{ start_questionnaire.0.date }}</b></p>
-            <p>Letzter Fragebogen: <b>{{ end_questionnaire.0.date }}</b></p>
+        {% else %}
+            <p>Erster Fragebogen: <b>Nicht ausgefüllt</b></p>
+        {% endif %}
+            {% if end_questionnaire %}
+                <p>Letzter Fragebogen: <b>{{ end_questionnaire.0.date }}</b></p>
+            {% else %}
+                <p>Letzter Fragebogen: <b>Nicht ausgefüllt</b></p>
+            {% endif %}
+
 
             <a class="btn btn-primary btn-lg mt-1" href="{% url 'questionnaire:landing_page' %}" role="button">Zurück</a>
             <a class="btn btn-primary btn-lg mt-1" href="{% url 'member:update_member' pseudo_user.id %}" role="button">Editieren</a>

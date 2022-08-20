@@ -120,7 +120,7 @@ class PairListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
         pseudo_users = PseudoUser.objects.all()
 
         context = super().get_context_data(**kwargs)
-        context['pseudo_user'] = pseudo_users
+        context['pseudo_users'] = pseudo_users
         return context
 
     def test_func(self):
