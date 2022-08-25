@@ -3,7 +3,7 @@ import datetime
 import itertools
 import os
 
-from django.shortcuts import HttpResponse, render
+from django.shortcuts import HttpResponse, render, redirect
 from webpush import send_group_notification
 from django.contrib.contenttypes.models import ContentType
 
@@ -139,7 +139,7 @@ class Service:
         try:
             questionnaire_catalogue_exact = questionnaire_catalogue[0].id
         except IndexError:
-            return render(request, 'questionnaire/success.html')
+            return redirect('questionnaire/success.html')
         return questionnaire_catalogue_exact
 
     @staticmethod

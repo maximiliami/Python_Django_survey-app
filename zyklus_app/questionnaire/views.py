@@ -298,7 +298,8 @@ def show_questionnaire(request, which_quest):
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def save_quest(request, which_quest):
-    questions = Service.get_questions_for_catalogue_by_id(request, Service.get_question_catalogue_id(request, which_quest))
+    questions = Service.get_questions_for_catalogue_by_id(request,
+                                                          Service.get_question_catalogue_id(request, which_quest))
     question_list = []
     answer_list = []
 
