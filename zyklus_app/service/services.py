@@ -3,9 +3,11 @@ import datetime
 import itertools
 import os
 
-from django.shortcuts import HttpResponse
-from questionnaire.models import PseudoUser, Pair, QuestionnaireDaily
+from django.shortcuts import HttpResponse, render
 from webpush import send_group_notification
+from django.contrib.contenttypes.models import ContentType
+
+from questionnaire.models import PseudoUser, QuestionnaireDaily, Pair, Question, QuestionCatalogue
 
 
 class Service:
@@ -128,3 +130,25 @@ class Service:
                    "icon": "/static/images/lotus.png",
                    "url": "https://zyklus-app.project.mylab.th-luebeck.de/"}
         send_group_notification("daily", payload=payload, ttl=1000)
+
+    @staticmethod
+    def get_question_catalogue_id(request, lookup):
+        questionnaire_catalogue_exact = 'not_set'
+        questionnaire_catalogue = QuestionCatalogue.objects.filter(which_questionnaire=lookup)
+        # questions = Question.objects.filter(questionnaire_catalogue__which_questionnaire=lookup)
+        try:
+            questionnaire_catalogue_exact = questionnaire_catalogue[0].id
+        except IndexError:
+            return render(request, 'questionnaire/success.html')
+        return questionnaire_catalogue_exact
+
+    @staticmethod
+    def get_questions_for_catalogue_by_id(request, questionnaire_catalogue_id):
+        try:
+            questionnaire_catalogue = ContentType.objects.get_for_model(QuestionCatalogue)
+            questions = Question.objects.filter(content_type__pk=questionnaire_catalogue.id,
+                                                object_id__exact=questionnaire_catalogue_id)
+        except IndexError:
+            return render(request, 'questionnaire/success.html')
+
+        return questions

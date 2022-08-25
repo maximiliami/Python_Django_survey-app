@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+{% block head %}
+    <script type="text/javascript" src="{% static "/js/prevent_back.js" %}"></script>
+    <script type="text/javascript" src="{% static "/js/questionnaire.js" %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="text-center questionnaire-header">
+        <h1 id="test">{{ page_title }}</h1>
+    </div>
+
+    <form action="{% url 'questionnaire:save_q' quest %}" method="post">
+        {% csrf_token %}
+        <div class="border position-relative m-4 p-5">
+            <div class="mx-auto">
+                <fieldset>
+                    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+                    {% if quest == 'start' %}
+                        <div class="visible question_block">
+                            <div class="question_header" id="{{ question.id }}">
+                                <label for="gender" class="quest_lable">Geschlecht:</label>
+                            </div>
+
+                            <div class="arrow up" id="to_toggle_class_{{ question.id }}"></div>
+                            <div id="to_toggle_{{ question.id }}" class="to_toggle" style="display: block">
+                                <select name="gender" id="gender" class="form-select form-select-m
+                                " aria-label=".form-select-lg example">
+                                    <option value="male">Männlich</option>
+                                    <option value="female">Weiblich</option>
+                                    <option value="other">Divers</option>
+                                </select>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% for question in questions %}
+                        {% if question.hidden %}
+                            <div class="hidden question_block">
+                        {% else %}
+                            <div class="visible question_block">
+                        {% endif %}
+                    <div class="question_header" id="{{ question.id }}">
+                        <label for="{{ question.name }}" class="quest_label">{{ question.question_text }}</label>
+                    </div>
+                    <div class="arrow down" id="to_toggle_class_{{ question.id }}"></div>
+                        {% if forloop.first and quest != 'start'%}
+                            <div id="to_toggle_{{ question.id }}" class="to_toggle" style="display: block">
+                    {% else %}
+                            <div id="to_toggle_{{ question.id }}" class="to_toggle" style="display: none">
+                    {% endif %}
+                        <select name="{{ question.name }}" id="{{ question.name }}" class="form-select form-select-m
+                            " aria-label=".form-select-lg example">
+                            {% for choice in question.choice_set.all %}
+                                <option value="{{ choice.value }}">{{ choice.choice_text }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    {% endfor %}
+                    </div>
+                    <input type="submit" value="Speichern" class="btn btn-primary">
+                </fieldset>
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -37,3 +37,13 @@ class QuestionnaireStartForm(ModelForm):
         model = QuestionnaireStart
         fields = '__all__'
         exclude = ('pseudo_user',)
+
+
+# class QuestionnaireForm(Form):
+#     questionnaire_catalogue = ContentType.objects.get_for_model(QuestionCatalogue)
+#     questionnaire_catalogue_exact = QuestionCatalogue.objects.filter(which_questionnaire='start')
+#     questions = Question.objects.filter(content_type__pk=questionnaire_catalogue.id,
+#                                         object_id__exact=questionnaire_catalogue_exact[0].id)
+#
+#     for question in questions:
+

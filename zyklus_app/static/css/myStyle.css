@@ -72,7 +72,7 @@ body {
     background-color: #039BE5;
 }
 
-.btn.btn-primary.align-middle.mt-2{
+.btn.btn-primary.align-middle.mt-2 {
     width: 100%;
     height: 40px;
     background-color: #03A9F4;
@@ -83,7 +83,7 @@ body {
     letter-spacing: 0.2rem;
 }
 
-.btn.btn-primary.align-middle.mt-2:hover{
+.btn.btn-primary.align-middle.mt-2:hover {
     background-color: #039BE5;
 }
 
@@ -104,7 +104,7 @@ body {
 .logo {
     width: 90px;
     margin: auto;
-    margin-top: 0!important;
+    margin-top: 0 !important;
     background: whitesmoke;
 }
 
@@ -119,40 +119,106 @@ body {
     -8px -8px 15px #fff;
 }
 
-.login-form{
-    margin-top: 0!important;
+.login-form {
+    margin-top: 0 !important;
 }
 
-@media(max-width: 420px) {
-    .body{
+
+.question_header {
+    color: white;
+    background: dimgrey;
+}
+
+@media (max-width: 420px) {
+    .body {
         padding-top: 50px;
     }
+
     .wrapper {
         margin: 100px 20px 20px;
         padding: 40px 15px 15px 15px;
     }
-    .navbar{
+
+    .navbar {
         padding-top: 10px;
         padding-bottom: 10px;
     }
-    .navbar-brand{
+
+    .navbar-brand {
         font-size: 25pt;
     }
-    .text-center.mt-4.name{
+
+    .text-center.mt-4.name {
         font-size: 25pt;
         padding: 0;
     }
-    .nav-link{
+
+    .nav-link {
         font-size: 15pt;
     }
-    .text-center.questionnaire-header{
+
+    .text-center.questionnaire-header {
         margin-top: 50px;
     }
-    .alert{
+
+    .alert {
         margin-top: 30px;
     }
 }
 
 .font-white {
     color: white;
+}
+
+div.question_block {
+    margin: 10px;
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    border-radius: 3px 15px 5px 30px;
+    background: #dfdfdf;
+}
+
+div.question_header {
+    padding: 25px;
+    box-sizing: content-box;
+    border-radius: 3px 15px 5px 30px;
+    display: flow-root;
+}
+
+div.question_header:hover {
+    padding: 25px;
+    box-sizing: content-box;
+    border-radius: 3px 15px 5px 30px;
+    background: #0a0a0a;
+}
+
+
+div.to_toggle {
+    margin-top: 20px;
+    padding: 15px;
+    box-sizing: content-box;
+}
+
+.quest_lable {
+    margin-left: 2px;
+    font-size: 12pt;
+}
+
+.arrow {
+    border: solid white;
+    border-width: 0 6px 6px 0;
+    display: inline-block;
+    padding: 3px;
+    float: right;
+}
+
+.up {
+    margin: -43px 36px 8px 8px;
+    transform: rotate(-135deg);
+}
+
+.down {
+    margin: -43px 36px 28px 5px;
+    transform: rotate(42deg);
 }

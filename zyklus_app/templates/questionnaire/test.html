@@ -2,8 +2,14 @@
 
 {% block content %}
     <h1>Test</h1>
-{% comment %}    <div>{% for item in dq %}
-            <p>{{ item.pseudo_user }}</p>
-            <p>{{ user_code }}</p>
-        {% endfor %}</div>{% endcomment %}
+    {% for question in questions %}
+        <p>{{ question }}</p>
+    {% endfor %}
+
+    {% for answer in answer_list %}
+        <p>{{ answer.answer_text }}</p>
+    {% endfor %}
+
+    {{ quest }}
+
 {% endblock %}

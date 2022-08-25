@@ -21,4 +21,6 @@ urlpatterns = [
          name='create_sq'),
     path('create_eq', CreateEndQuestionnaireView.as_view(extra_context={'page_title': '"letzter" Fragebogen'}),
          name='create_eq'),
+    path('create_tq/<which_quest>', show_questionnaire, name='create_tq'),
+    path('save_q/<which_quest>', save_quest, name='save_q'),
 ]

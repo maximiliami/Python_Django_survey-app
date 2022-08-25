@@ -3,3 +3,10 @@ GENDER_CHOICES = [
     ('female', 'Female'),
     ('other', 'Miscellaneous')
 ]
+
+QUESTIONNAIRE_CHOICES = [
+    ('start', 'Start'),
+    ('daily', 'Daily'),
+    ('end', 'End'),
+    ('test', 'Test')
+]

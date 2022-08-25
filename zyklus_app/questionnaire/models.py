@@ -3,7 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 
 # Create your models here.
 from questionnaire import choices
@@ -107,3 +108,78 @@ class QuestionnaireDaily(models.Model):
 
     def __str__(self):
         return f'{self.pseudo_user} {str(self.date)}'
+
+
+# Models for editable Questions
+class Question(models.Model):
+    name = models.CharField(_('Identifikator'), max_length=10, default='', unique='True')
+    question_text = models.CharField(_('Frage Text'), max_length=200)
+    hidden = models.BooleanField(_('Frage versteckt?'), default='False')
+    show_at_question = models.CharField(_('Identifikator um angezeigt zu werden'), max_length=10, default='')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField(_('Fremdschlüssel ID'))
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return str(self.question_text)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['content_type', 'object_id'])
+        ]
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    choice_text = models.CharField(max_length=200)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.choice_text)
+
+
+class Answer(models.Model):
+    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE)
+    value = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], default=10)
+    answer_text = models.CharField(max_length=200)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+
+    def __str__(self):
+        return f'{self.pseudo_user} {str(self.date)}'
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['content_type', 'object_id'])
+        ]
+
+
+class QuestionnaireTest(models.Model):
+    """Test Questionnaire"""
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
+    GenericRelation(Answer, content_type_field='content_typ', object_id_field='object_id', related_query_name='answer')
+
+    def __str__(self):
+        return f'{self.pseudo_user} {str(self.date)}'
+
+
+class QuestionnaireTestStart(models.Model):
+    """Test Questionnaire"""
+    gender = models.CharField(_('Geschlecht'), max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True)
+    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'{self.pseudo_user} {str(self.date)}'
+
+
+class QuestionCatalogue(models.Model):
+    which_questionnaire = models.CharField(max_length=5, choices=choices.QUESTIONNAIRE_CHOICES, default='None',
+                                           unique='True')
+    GenericRelation(Question, related_query_name='question')
+
+    def __str__(self):
+        return str(self.which_questionnaire)

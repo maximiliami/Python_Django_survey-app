@@ -4,7 +4,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
@@ -12,7 +14,8 @@ from django.contrib import messages
 
 import questionnaire
 from service.services import Service
-from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair
+from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair, \
+    QuestionnaireTest, Answer, Choice, QuestionnaireTestStart
 from .forms import QuestionnaireStartForm
 
 
@@ -249,3 +252,82 @@ class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
             return redirect("questionnaire:landing_page")
 
         return super(CreateEndQuestionnaireView, self).get(*args, **kwargs)
+
+
+def test_for_print(request):
+    max = PseudoUser.objects.filter(user_code__exact='max')
+    ##
+    test_quests = QuestionnaireTestStart.objects.filter(pseudo_user=max[0])
+    index = 0
+
+    for quest in test_quests:
+        ## Gets id for content_type_query
+        test_questionnaire = ContentType.objects.get_for_model(QuestionnaireTestStart)
+        answers = Answer.objects.filter(content_type__pk=test_questionnaire.id, object_id__exact=quest.id)
+
+        print(quest)
+        for a in answers:
+            print(a.answer_text)
+            print(a.object_id)
+        index += 1
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def show_questionnaire(request, which_quest):
+    questions = Service.get_questions_for_catalogue_by_id(request,
+                                                          Service.get_question_catalogue_id(request, which_quest))
+
+    if which_quest == 'test':
+        page_title = 'Test Fragebogen'
+    elif which_quest == 'start':
+        page_title = 'Start Fragebogen'
+    elif which_quest == 'daily':
+        page_title = 'Täglicher Fragebogen'
+    elif which_quest == 'end':
+        page_title = 'Letzter Fragebogen'
+    else:
+        page_title = 'Fehler 404'
+
+    if questions.count() == 0:
+        ## TODO Template keine Fragen angelegt
+        return redirect('questionnaire:landing_page')
+
+    return render(request, 'questionnaire/questionnaire_form.html',
+                  {'questions': questions, 'page_title': page_title, 'quest': which_quest})
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def save_quest(request, which_quest):
+    questions = Service.get_questions_for_catalogue_by_id(request, Service.get_question_catalogue_id(request, which_quest))
+    question_list = []
+    answer_list = []
+
+    if which_quest == 'test':
+        quest = QuestionnaireTest(pseudo_user=request.user)
+    elif which_quest == 'start':
+        quest = QuestionnaireTestStart(pseudo_user=request.user)
+        quest.gender = request.POST['gender']
+        pseudo_user = request.user
+        pseudo_user.gender = request.POST['gender']
+        pseudo_user.save()
+    elif which_quest == 'daily':
+        quest = QuestionnaireDaily(pseudo_user=request.user)
+    elif which_quest == 'end':
+        quest = QuestionnaireEnd(pseudo_user=request.user)
+    else:
+        quest = QuestionnaireTest(pseudo_user=request.user)
+    quest.save()
+
+    for question in questions:
+        question_name = request.POST[question.name]
+        question_list.append(question_name)
+        answer_text = Choice.objects.filter(question=question, value=question_name)[0]
+        answer = Answer(pseudo_user=request.user, value=question_name, answer_text=answer_text,
+                        content_object=quest,
+                        object_id=quest.id)
+        answer_list.append(answer)
+        answer.save()
+
+    # return redirect('questionnaire:landing_page')
+    return render(request, 'questionnaire/test.html',
+                  {'questions': question_list, 'answer_list': answer_list, 'quest': quest})
