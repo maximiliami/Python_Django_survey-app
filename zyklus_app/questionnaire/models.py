@@ -160,7 +160,7 @@ class QuestionnaireTest(models.Model):
     """Test Questionnaire"""
     date = models.DateTimeField(auto_now_add=True, blank=True)
     pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
-    GenericRelation(Answer, content_type_field='content_typ', object_id_field='object_id', related_query_name='answer')
+    GenericRelation(Answer, related_query_name='answer')
 
     def __str__(self):
         return f'{self.pseudo_user} {str(self.date)}'
