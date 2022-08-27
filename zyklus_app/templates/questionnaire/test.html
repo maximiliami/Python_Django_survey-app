@@ -10,6 +10,10 @@
         <p>{{ answer.answer_text }}</p>
     {% endfor %}
 
+    {% for choice in get_choices %}
+        <p>{{ choice }}</p>
+    {% endfor %}
+
     {{ quest }}
 
 {% endblock %}

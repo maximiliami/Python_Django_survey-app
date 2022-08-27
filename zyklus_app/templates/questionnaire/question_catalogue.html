@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{# Fills Block content #}
+{% block content %}
+
+    <div class="border position-relative m-4 p-5 form-floating">
+        <h3>Fragen für {{ question_catalogue }}</h3>
+        <table class="table table-striped">
+            <thead class="table">
+            <tr>
+                <th scope="col">Fragen</th>
+            </tr>
+            </thead>
+
+            {% for question in questions %}
+                <tr>
+                    <td><a class="link-dark" href="{% url 'questionnaire:update_question' pk=question.id which_catalogue=question_catalogue.name %}">{{ question }}</a></td>
+                </tr>
+            {% endfor %}
+
+        </table>
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_question' which_catalogue=question_catalogue %}" role="button">Neue Frage</a>
+    </div>
+
+{% endblock %}

@@ -132,10 +132,8 @@ class Service:
         send_group_notification("daily", payload=payload, ttl=1000)
 
     @staticmethod
-    def get_question_catalogue_id(request, lookup):
-        questionnaire_catalogue_exact = 'not_set'
+    def get_question_catalogue_id(lookup):
         questionnaire_catalogue = QuestionCatalogue.objects.filter(which_questionnaire=lookup)
-        # questions = Question.objects.filter(questionnaire_catalogue__which_questionnaire=lookup)
         try:
             questionnaire_catalogue_exact = questionnaire_catalogue[0].id
         except IndexError:

@@ -8,44 +8,108 @@
     </div>
     <div class="border position-relative m-4 p-5 form-floating">
         <h3>Benutzerliste</h3>
-        <table class="table table-striped">
-            <thead class="table">
-            <tr>
-                <th scope="col">User-Code</th>
-                <th scope="col">Pair-Code</th>
-            </tr>
-            </thead>
+        {% if not members.exists %}
+            <table class="table table-striped">
+                <thead class="table">
+                <tr>
+                    <th scope="col">Noch kein Benutzer angelegt</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td><b><a href="{% url 'member:create_member' %}">Neuer Benutzer</a></b></td>
+                </tr>
+            </table>
 
-            {% for member in members %}
-                {# only shows user who are not admin or Staff #}
-                {% if not member.is_superuser and not member.is_staff %}
-                    <tr>
-                        <td><a class="link-dark" href="{{ '../member/member_detail/' }} {{ member.id }}">{{ member.user_code }}</a></td>
-                        <td>{{ member.pair }}</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
+        {% else %}
 
-        </table>
-        <a class="btn btn-primary btn-lg" href="{% url 'member:create_member' %}" role="button">Neuer Benutzer</a>
+            <table class="table table-striped">
+                <thead class="table">
+                <tr>
+                    <th scope="col">User-Code</th>
+                    <th scope="col">Pair-Code</th>
+                </tr>
+                </thead>
+
+                {% for member in members %}
+                    {# only shows user who are not admin or Staff #}
+                    {% if not member.is_superuser and not member.is_staff %}
+                        <tr>
+                            <td><a class="link-dark"
+                                   href="{% url 'member:update_member' member.id %}">{{ member.user_code }}</a>
+                            </td>
+                            <td>{{ member.pair }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+
+            </table>
+            <a class="btn btn-primary btn-lg" href="{% url 'member:create_member' %}" role="button">Neuer Benutzer</a>
+        {% endif %}
     </div>
     <div class="border position-relative m-4 p-5 form-floating">
-    <h3>Paarliste</h3>
+        <h3>Paarliste</h3>
+        {% if not pairs.exists %}
+            <table class="table table-striped">
+                <thead class="table">
+                <tr>
+                    <th scope="col">Noch kein Paar angelegt</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td><b><a href="{% url 'questionnaire:create_pair' %}">Neues Paar</a></b></td>
+                </tr>
+            </table>
+        {% else %}
+            <table class="table table-striped">
+                <thead class="table">
+                <tr>
+                    <th scope="col">Pair-Code</th>
+                </tr>
+                </thead>
+
+                {% for pair in pairs %}
+                    <tr>
+                        <td><a class="link-dark"
+                               href="{% url 'questionnaire:pair_detail' pair.id %}">{{ pair.ident }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+            <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+        {% endif %}
+    </div>
+    </div>
+    <div class="border position-relative m-4 p-5 form-floating">
+        <h3>Fragen Kataloge für Fragebögen</h3>
+        {% if not question_catalogues.exists %}
         <table class="table table-striped">
             <thead class="table">
             <tr>
-                <th scope="col">Pair-Code</th>
+                <th scope="col">Noch kein Fragenkatalog angelegt</th>
+            </tr>
+            </thead>
+            <tr>
+                <td><b><a href="{% url 'questionnaire:landing_page' %}">Neues Paar</a></b></td>
+            </tr>
+        </table>
+        {% else %}
+        <table class="table table-striped">
+            <thead class="table">
+            <tr>
+                <th scope="col">Kataloge</th>
             </tr>
             </thead>
 
-            {% for pair in pairs %}
+            {% for question_catalogue in question_catalogues %}
                 <tr>
-                    <td><a class="link-dark" href="{% url 'questionnaire:pair_detail' pair.id %}">{{ pair.ident }}</a></td>
+                    <td><a class="link-dark"
+                           href="{% url 'questionnaire:questionnaire_catalogue' question_catalogue.name %}">{{ question_catalogue.name }}</a>
+                    </td>
                 </tr>
             {% endfor %}
-
         </table>
-        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+    {% endif %}
     </div>
 
 {% endblock %}

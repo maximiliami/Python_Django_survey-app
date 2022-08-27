@@ -23,4 +23,8 @@ urlpatterns = [
          name='create_eq'),
     path('create_tq/<which_quest>', show_questionnaire, name='create_tq'),
     path('save_q/<which_quest>', save_quest, name='save_q'),
+    path('create_question/<which_catalogue>/', CreateQuestion.as_view(extra_context={'page_title': 'Neue Frage'}), name='create_question'),
+    path('questionnaire_catalogue/<which_questionnaire>', show_catalogue, name='questionnaire_catalogue'),
+    path('update_question/<pk>/<which_catalogue>', QuestionUpdateView.as_view(
+        extra_context={'page_title': 'Frage ändern'}), name='update_question'),
 ]

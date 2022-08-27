@@ -1,7 +1,9 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm
+from django.forms.models import inlineformset_factory
+from django.contrib.contenttypes.forms import ModelForm as CModelForm
 
-from questionnaire.models import PseudoUser, QuestionnaireStart
+from questionnaire.models import PseudoUser, QuestionnaireStart, Question, Choice
 from service.services import Service
 
 
@@ -11,7 +13,7 @@ from service.services import Service
 class RegisterForm(UserCreationForm):
     class Meta:
         model = PseudoUser
-        fields = ['user_code', 'gender', 'pair']
+        fields = ['user_code', 'pair']
 
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
@@ -39,11 +41,17 @@ class QuestionnaireStartForm(ModelForm):
         exclude = ('pseudo_user',)
 
 
-# class QuestionnaireForm(Form):
-#     questionnaire_catalogue = ContentType.objects.get_for_model(QuestionCatalogue)
-#     questionnaire_catalogue_exact = QuestionCatalogue.objects.filter(which_questionnaire='start')
-#     questions = Question.objects.filter(content_type__pk=questionnaire_catalogue.id,
-#                                         object_id__exact=questionnaire_catalogue_exact[0].id)
-#
-#     for question in questions:
+class QuestionForm(CModelForm):
+    class Meta:
+        model = Question
+        fields = '__all__'
+        exclude = ('question_catalogue',)
 
+
+class ChoiceForm(CModelForm):
+    class Meta:
+        model = Choice
+        fields = '__all__'
+
+
+QuestionChoiceFormset = inlineformset_factory(Question, Choice, fields=('question',), extra=3)

@@ -1,5 +1,6 @@
 import datetime
 
+from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,8 +16,8 @@ from django.contrib import messages
 import questionnaire
 from service.services import Service
 from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair, \
-    QuestionnaireTest, Answer, Choice, QuestionnaireTestStart
-from .forms import QuestionnaireStartForm
+    QuestionnaireTest, Answer, Choice, QuestionnaireTestStart, Question, QuestionCatalogue
+from .forms import QuestionnaireStartForm, QuestionChoiceFormset
 
 
 # Create your views here.
@@ -39,10 +40,8 @@ def landing_page(request):
 
         # render admin interface if Staff or Superuser
         if request.user.is_superuser or request.user.is_staff:
-            members = PseudoUser.objects.all()
-            pairs = Pair.objects.all()
-            context = {'page_title': 'Admin-interface', 'members': members, 'pairs': pairs}
-            return admin_interface(request, context)
+
+            return admin_interface(request)
         else:
             # Program flow for normal users
             # render create_sq if the Users questionnaire_start is None
@@ -98,7 +97,14 @@ def download_all_data(request):
 
 
 @login_required(login_url='questionnaire:landing_page')
-def admin_interface(request, context):
+def admin_interface(request):
+    members = PseudoUser.objects.all()
+    question_catalogues = QuestionCatalogue.objects.all()
+    pairs = Pair.objects.all()
+    context = {'page_title': 'Admin-interface',
+               'members': members,
+               'pairs': pairs,
+               'question_catalogues': question_catalogues}
     return render(request, 'questionnaire/admin_interface.html', context)
 
 
@@ -254,14 +260,73 @@ class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
         return super(CreateEndQuestionnaireView, self).get(*args, **kwargs)
 
 
+class CreateChoice(UserPassesTestMixin, LoginRequiredMixin, CreateView):
+    model = questionnaire.models.Choice
+    form_class = questionnaire.forms.QuestionForm
+    template_name = 'questionnaire/question_form.html'
+    success_url = 'landing_page'
+    login_url = 'member:login'
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+
+class CreateQuestion(UserPassesTestMixin, LoginRequiredMixin, CreateView):
+    model = questionnaire.models.Question
+    form_class = questionnaire.forms.QuestionForm
+    template_name = 'questionnaire/question_form.html'
+    login_url = 'member:login'
+
+    def form_valid(self, form):
+        form.instance.question_catalogue = QuestionCatalogue.objects.filter(name=self.kwargs['which_catalogue'])[0]
+        print(self.kwargs)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        data = super(CreateQuestion, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['choices'] = QuestionChoiceFormset(self.request.POST)
+        else:
+            data['choices'] = QuestionChoiceFormset()
+        return data
+
+    def form_invalid(self, form):
+        context = self.get_context_data()
+        choices = context['choices']
+        with transaction.atomic():
+            form.instance.created_by = self.request.user
+            self.object = form.save()
+        if choices.is_valid():
+            choices.instance = self.object
+            choices.save()
+        return super(CreateQuestion, self).form_valid(form)
+
+    def get_success_url(self):
+        success_url = '../../questionnaire_catalogue/' + self.kwargs['which_catalogue']
+        return success_url
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+
+@method_decorator(login_required, name='dispatch')
+class QuestionUpdateView(UpdateView):
+    model = questionnaire.models.Question
+    fields = ['name', 'question_text', 'hidden', 'show_at_question']
+
+    def get_success_url(self):
+        success_url = '../../questionnaire_catalogue/' + self.kwargs['which_catalogue']
+        return success_url
+
+
 def test_for_print(request):
-    max = PseudoUser.objects.filter(user_code__exact='max')
+    pseudo_user = PseudoUser.objects.filter(user_code__exact='pseudo_user')
     ##
-    test_quests = QuestionnaireTestStart.objects.filter(pseudo_user=max[0])
+    test_quests = QuestionnaireTestStart.objects.filter(pseudo_user=pseudo_user[0])
     index = 0
 
     for quest in test_quests:
-        ## Gets id for content_type_query
+        # Gets id for content_type_query
         test_questionnaire = ContentType.objects.get_for_model(QuestionnaireTestStart)
         answers = Answer.objects.filter(content_type__pk=test_questionnaire.id, object_id__exact=quest.id)
 
@@ -273,9 +338,25 @@ def test_for_print(request):
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+def show_catalogue(request, which_questionnaire):
+    question_catalogue = QuestionCatalogue.objects.filter(name__exact=which_questionnaire)
+    questions = question_catalogue[0].get_all_questions()
+    context = {'page_title': 'Admin-interface',
+               'question_catalogue': question_catalogue[0],
+               'questions': questions}
+    return render(request, 'questionnaire/question_catalogue.html', context)
+
+
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def show_questionnaire(request, which_quest):
-    questions = Service.get_questions_for_catalogue_by_id(request,
-                                                          Service.get_question_catalogue_id(request, which_quest))
+    regular_questions = []
+
+    question_catalogue = QuestionCatalogue.objects.filter(name=which_quest)
+    questions = question_catalogue[0].get_all_questions()
+
+    for question in questions:
+        if not Choice.objects.filter(question=question).count() <= 0:
+            regular_questions.append(question)
 
     if which_quest == 'test':
         page_title = 'Test Fragebogen'
@@ -293,15 +374,19 @@ def show_questionnaire(request, which_quest):
         return redirect('questionnaire:landing_page')
 
     return render(request, 'questionnaire/questionnaire_form.html',
-                  {'questions': questions, 'page_title': page_title, 'quest': which_quest})
+                  {'questions': regular_questions, 'page_title': page_title, 'quest': which_quest})
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def save_quest(request, which_quest):
-    questions = Service.get_questions_for_catalogue_by_id(request,
-                                                          Service.get_question_catalogue_id(request, which_quest))
+    questions = Question.objects.filter(question_catalogue__name=which_quest)
     question_list = []
     answer_list = []
+    get_choices = []
+    regular_questions = []
+
+    for question in questions:
+        get_choices.append(question.get_all_choices())
 
     if which_quest == 'test':
         quest = QuestionnaireTest(pseudo_user=request.user)
@@ -320,6 +405,10 @@ def save_quest(request, which_quest):
     quest.save()
 
     for question in questions:
+        if not Choice.objects.filter(question=question).count() <= 0:
+            regular_questions.append(question)
+
+    for question in regular_questions:
         question_name = request.POST[question.name]
         question_list.append(question_name)
         answer_text = Choice.objects.filter(question=question, value=question_name)[0]
@@ -331,4 +420,4 @@ def save_quest(request, which_quest):
 
     # return redirect('questionnaire:landing_page')
     return render(request, 'questionnaire/test.html',
-                  {'questions': question_list, 'answer_list': answer_list, 'quest': quest})
+                  {'questions': question_list, 'answer_list': answer_list, 'quest': quest, 'get_choices': get_choices})

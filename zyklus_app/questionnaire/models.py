@@ -110,27 +110,34 @@ class QuestionnaireDaily(models.Model):
         return f'{self.pseudo_user} {str(self.date)}'
 
 
+class QuestionCatalogue(models.Model):
+    name = models.CharField(max_length=5, choices=choices.QUESTIONNAIRE_CHOICES, default='None',
+                            unique='True')
+
+    def __str__(self):
+        return str(self.name)
+
+    def get_all_questions(self):
+        return Question.objects.filter(question_catalogue__exact=self)
+
+
 # Models for editable Questions
 class Question(models.Model):
     name = models.CharField(_('Identifikator'), max_length=10, default='', unique='True')
     question_text = models.CharField(_('Frage Text'), max_length=200)
     hidden = models.BooleanField(_('Frage versteckt?'), default='False')
     show_at_question = models.CharField(_('Identifikator um angezeigt zu werden'), max_length=10, default='')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField(_('Fremdschlüssel ID'))
-    content_object = GenericForeignKey('content_type', 'object_id')
+    question_catalogue = models.ForeignKey(QuestionCatalogue, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.question_text)
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['content_type', 'object_id'])
-        ]
+    def get_all_choices(self):
+        return Choice.objects.filter(question=self)
 
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, null=False, blank=False, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     value = models.IntegerField(default=0)
 
@@ -174,12 +181,3 @@ class QuestionnaireTestStart(models.Model):
 
     def __str__(self):
         return f'{self.pseudo_user} {str(self.date)}'
-
-
-class QuestionCatalogue(models.Model):
-    which_questionnaire = models.CharField(max_length=5, choices=choices.QUESTIONNAIRE_CHOICES, default='None',
-                                           unique='True')
-    GenericRelation(Question, related_query_name='question')
-
-    def __str__(self):
-        return str(self.which_questionnaire)
