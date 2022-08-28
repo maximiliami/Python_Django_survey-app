@@ -14,17 +14,14 @@ urlpatterns = [
         extra_context={'page_title': 'Paar löschen'}), name='delete_pair'),
     path('pair_detail/<pk>/', PairDetailView.as_view(
         extra_context={'page_title': 'Paar'}), name='pair_detail'),
-    path('create_dq', CreateDailyQuestionnaireView.as_view(extra_context={'page_title': 'Täglicher Fragebogen'}),
-         name='create_dq'),
     path('landing_page', landing_page, name='landing_page'),
-    path('create_sq', CreateStartQuestionnaireView.as_view(extra_context={'page_title': '"erster" Fragebogen'}),
-         name='create_sq'),
-    path('create_eq', CreateEndQuestionnaireView.as_view(extra_context={'page_title': '"letzter" Fragebogen'}),
-         name='create_eq'),
-    path('create_tq/<which_quest>', show_questionnaire, name='create_tq'),
+    path('create_questionnaire/<which_quest>', create_questionnaire, name='create_questionnaire'),
     path('save_q/<which_quest>', save_quest, name='save_q'),
-    path('create_question/<which_catalogue>/', CreateQuestion.as_view(extra_context={'page_title': 'Neue Frage'}), name='create_question'),
+    path('create_question/<which_catalogue>/', CreateQuestion.as_view(extra_context={'page_title': 'Neue Frage'}),
+         name='create_question'),
     path('questionnaire_catalogue/<which_questionnaire>', show_catalogue, name='questionnaire_catalogue'),
-    path('update_question/<pk>/<which_catalogue>', QuestionUpdateView.as_view(
-        extra_context={'page_title': 'Frage ändern'}), name='update_question'),
+    path('question/<int:pk>', QuestionDetailView.as_view(), name='question_detail'),
+    path('question/<int:pk>/choice/edit', QuestionChoiceUpdateView.as_view(), name='question_update'),
+    path('delete_question/<pk>', QuestionDeleteView.as_view(
+        extra_context={'page_title': 'Frage löschen'}), name='delete_question'),
 ]

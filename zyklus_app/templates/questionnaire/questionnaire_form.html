@@ -50,7 +50,7 @@
                     {% endif %}
                         <select name="{{ question.name }}" id="{{ question.name }}" class="form-select form-select-m
                             " aria-label=".form-select-lg example">
-                            {% for choice in question.choice_set.all %}
+                            {% for choice in question.question_choice.all %}
                                 <option value="{{ choice.value }}">{{ choice.choice_text }}</option>
                             {% endfor %}
                         </select>

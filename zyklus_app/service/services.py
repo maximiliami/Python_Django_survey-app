@@ -7,7 +7,7 @@ from django.shortcuts import HttpResponse, render, redirect
 from webpush import send_group_notification
 from django.contrib.contenttypes.models import ContentType
 
-from questionnaire.models import PseudoUser, QuestionnaireDaily, Pair, Question, QuestionCatalogue
+from questionnaire.models import PseudoUser, Pair, Question, QuestionCatalogue, Questionnaire
 
 
 class Service:
@@ -33,14 +33,18 @@ class Service:
         for user in PseudoUser.objects.all():
             has_dq_for_today = False
             print(f'User: {user}')
-            if QuestionnaireDaily.objects.filter(pseudo_user__exact=user).count() < Service.PERIOD:
-                for dq in QuestionnaireDaily.objects.filter(pseudo_user__exact=user):
+            if Questionnaire.objects.filter(pseudo_user__exact=user,
+                                            is_end_questionnaire=False,
+                                            is_start_questionnaire=False).count() < Service.PERIOD:
+                for dq in Questionnaire.objects.filter(pseudo_user__exact=user,
+                                                            is_end_questionnaire=False,
+                                                            is_start_questionnaire=False):
                     print(f'Daily-questionnaire: {dq.date.date()}')
                     if dq.date.date() == datetime.date.today():
                         print(f'dq-date: {dq.date.date()}, date today: {datetime.date.today()}')
                         has_dq_for_today = True
                 if not has_dq_for_today:
-                    new_dq = QuestionnaireDaily()
+                    new_dq = Questionnaire()
                     new_dq.pseudo_user = user
                     new_dq.save()
                 print(has_dq_for_today)
@@ -66,7 +70,7 @@ class Service:
         writer = csv.writer(this_response)
 
         pseudo_users = PseudoUser.objects.all()
-        daily_questionnaires = QuestionnaireDaily.objects.all()
+        daily_questionnaires = Questionnaire.objects.all()
 
         for pair in pairs:
             pair_users = pseudo_users.filter(pair=pair)
@@ -94,7 +98,7 @@ class Service:
                                                                         pair_user_two_questionnaires):
                     print(f'(Ausgangswert: {dq_user_one}, {dq_user_two})')
                     if dq_user_one is None:
-                        dq_user_one = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
+                        dq_user_one = Questionnaire(pseudo_user=PseudoUser(user_code='Default'))
                         dq_user_one.date = datetime.datetime.today()
                         dq_user_one.question_one = 'Kein Wert'
                         dq_user_one.question_two = 'Kein Wert'
@@ -103,7 +107,7 @@ class Service:
                         dq_user_one.question_five = 'Kein Wert'
                         dq_user_one.question_six = 'Kein Wert'
                     if dq_user_two is None:
-                        dq_user_two = QuestionnaireDaily(pseudo_user=PseudoUser(user_code='Default'))
+                        dq_user_two = Questionnaire(pseudo_user=PseudoUser(user_code='Default'))
                         dq_user_two.date = datetime.datetime.today()
                         dq_user_two.question_one = 'Kein Wert'
                         dq_user_two.question_two = 'Kein Wert'

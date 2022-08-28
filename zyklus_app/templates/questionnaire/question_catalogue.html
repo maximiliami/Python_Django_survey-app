@@ -15,12 +15,13 @@
 
             {% for question in questions %}
                 <tr>
-                    <td><a class="link-dark" href="{% url 'questionnaire:update_question' pk=question.id which_catalogue=question_catalogue.name %}">{{ question }}</a></td>
+                    <td><a class="link-dark" href="{% url 'questionnaire:question_update' pk=question.id %}">{{ question }}</a></td>
                 </tr>
             {% endfor %}
 
         </table>
         <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_question' which_catalogue=question_catalogue %}" role="button">Neue Frage</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:landing_page' %}" role="button">Zurück</a>
     </div>
 
 {% endblock %}

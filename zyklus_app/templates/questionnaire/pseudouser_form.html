@@ -14,6 +14,7 @@
                 {% bootstrap_form form %}
                 {% csrf_token %}
                 <input class="btn btn-primary" type="submit" value="Speichern">
+                <a class="btn btn-primary" href="{% url 'questionnaire:landing_page' %}" role="button">Zurück</a>
             </form>
         </div>
     </div>

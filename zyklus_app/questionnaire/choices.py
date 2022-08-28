@@ -5,8 +5,7 @@ GENDER_CHOICES = [
 ]
 
 QUESTIONNAIRE_CHOICES = [
-    ('start', 'Start'),
-    ('daily', 'Daily'),
-    ('end', 'End'),
-    ('test', 'Test')
+    ('start', 'Einstiegsfragebogen'),
+    ('daily', 'Täglicher Fragebogen'),
+    ('end', 'Abschließender Fragebogen'),
 ]

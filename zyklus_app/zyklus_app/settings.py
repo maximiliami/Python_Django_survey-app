@@ -62,7 +62,8 @@ INSTALLED_APPS = [
     'django_crontab',
     'django_bootstrap5',
     'webpush',
-    'pwa'
+    'pwa',
+    'extra_views'
 ]
 
 MIDDLEWARE = [

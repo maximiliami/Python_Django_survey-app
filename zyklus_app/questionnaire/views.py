@@ -3,21 +3,21 @@ import datetime
 from django.db import transaction
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, FormView
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.contrib import messages
+from django.views.generic.detail import SingleObjectMixin
 
 import questionnaire
 from service.services import Service
-from .models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd, Pair, \
-    QuestionnaireTest, Answer, Choice, QuestionnaireTestStart, Question, QuestionCatalogue
-from .forms import QuestionnaireStartForm, QuestionChoiceFormset
+from .models import PseudoUser, Pair, \
+    Questionnaire, Answer, Choice, Question, QuestionCatalogue
+from .forms import QuestionChoiceFormset
 
 
 # Create your views here.
@@ -27,14 +27,19 @@ def landing_page(request):
     # fetches the user from the database
     if request.user.is_authenticated:
         pseudo_user = get_object_or_404(PseudoUser, pk=request.user.pk)
-        daily_questionnaires = QuestionnaireDaily.objects.filter(
-            pseudo_user__exact=request.user)  # fetches all DailyQuestionnaires of this user
+        daily_questionnaires = Questionnaire.objects.filter(
+            pseudo_user__exact=request.user, is_start_questionnaire=False,
+            is_end_questionnaire=False)  # fetches all DailyQuestionnaires of this user
 
         # fetches questionnaire_/ -start and -end
-        questionnaire_start = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)
+        questionnaire_start = Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                           is_start_questionnaire=True,
+                                                           is_end_questionnaire=False)
         if questionnaire_start.count() == 0:
             questionnaire_start = None
-        questionnaire_end = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)
+        questionnaire_end = Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                         is_end_questionnaire=True,
+                                                         is_start_questionnaire=False)
         if questionnaire_end.count() == 0:
             questionnaire_end = None
 
@@ -46,24 +51,34 @@ def landing_page(request):
             # Program flow for normal users
             # render create_sq if the Users questionnaire_start is None
             if questionnaire_start is None:
-                return redirect('questionnaire:create_sq')
+                return redirect('questionnaire:create_questionnaire', which_quest='start')
 
             if daily_questionnaires.count() < Service.PERIOD:
                 # tests whether a dq has already been created today
                 if not daily_questionnaires.filter(date__contains=datetime.date.today(),
                                                    date__startswith=datetime.date.today()):
-                    return redirect('questionnaire:create_dq')
+                    return redirect('questionnaire:create_questionnaire', which_quest='daily')
                 else:
-                    if QuestionnaireDaily.objects.filter(pseudo_user__exact=request.user).count() != 0:
-                        dq_count = QuestionnaireDaily.objects.filter(pseudo_user__exact=request.user).count()
+                    if Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                    is_start_questionnaire=False,
+                                                    is_end_questionnaire=False).count() != 0:
+                        dq_count = Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                                is_start_questionnaire=False,
+                                                                is_end_questionnaire=False).count()
                     else:
                         dq_count = 0
-                    if QuestionnaireStart.objects.filter(pseudo_user__exact=request.user):
-                        sq = QuestionnaireStart.objects.filter(pseudo_user__exact=request.user)[0].date.date()
+                    if Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                    is_start_questionnaire=True):
+                        sq = Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                          is_start_questionnaire=True)[0].date.date()
                     else:
                         sq = 'Noch nicht abgeschlossen'
-                    if QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user):
-                        lq = QuestionnaireEnd.objects.filter(pseudo_user__exact=request.user)[0].date.date()
+                    if Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                    is_end_questionnaire=True,
+                                                    is_start_questionnaire=False):
+                        lq = Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                                          is_start_questionnaire=False,
+                                                          is_end_questionnaire=True)[0].date.date()
                     else:
                         lq = 'Noch nicht abgeschlossen'
                     context = {'page_title': 'User Interface',
@@ -75,7 +90,7 @@ def landing_page(request):
                     return render(request, 'questionnaire/dq_already.html', context)
 
             if questionnaire_end is None:
-                return redirect('questionnaire:create_eq')
+                return redirect('questionnaire:create_questionnaire', which_quest='end')
 
             # Todo render success page
             context = {'page_title': 'Vielen Dank!', 'pseudo_user': pseudo_user}
@@ -167,97 +182,17 @@ class PairDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['pseudo_user'] = PseudoUser.objects.filter(pair__exact=self.object)
         if pseudo_users.count() >= 1:
-            context['questionnaires_user_one'] = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_users[0])
+            context['questionnaires_user_one'] = Questionnaire.objects.filter(pseudo_user__exact=pseudo_users[0],
+                                                                              is_start_questionnaire=False,
+                                                                              is_end_questionnaire=False)
         if pseudo_users.count() >= 2:
-            context['questionnaires_user_two'] = QuestionnaireDaily.objects.filter(pseudo_user__exact=pseudo_users[1])
+            context['questionnaires_user_two'] = Questionnaire.objects.filter(pseudo_user__exact=pseudo_users[1],
+                                                                              is_start_questionnaire=False,
+                                                                              is_end_questionnaire=False)
         return context
 
     def test_func(self):
         return self.request.user.is_staff
-
-
-# creates a new DailyQuestionnaire
-@method_decorator([never_cache, login_required], name='dispatch')
-class CreateDailyQuestionnaireView(LoginRequiredMixin, CreateView):
-    model = questionnaire.models.QuestionnaireDaily
-    fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
-    template_name = 'questionnaire/questionnaire_daily_form.html'
-    success_url = reverse_lazy('questionnaire:landing_page')
-
-    # fügt dem Formular den aufrufenden PseudoUser hinzu
-    def form_valid(self, form):
-        messages.success(self.request, f"Fragebogen gespeichert")
-        form.instance.created_by = self.request.user
-        form.instance.pseudo_user = self.request.user
-        return super().form_valid(form)
-
-    # Overrides the get method, view can only be called under certain conditions
-    def get(self, *args, **kwargs):
-        daily_questionnaires = QuestionnaireDaily.objects.filter(
-            pseudo_user__exact=self.request.user)
-        start_questionnaire = QuestionnaireStart.objects.filter(
-            pseudo_user__exact=self.request.user)
-
-        for dq in daily_questionnaires:
-            if dq.date == datetime.date.today():
-                redirect("questionnaire:landing_page")
-
-        if start_questionnaire.count() == 0:
-            return redirect("questionnaire:landing_page")
-        if not daily_questionnaires.filter(date__contains=datetime.date.today(),
-                                           date__startswith=datetime.date.today()):
-            return super(CreateDailyQuestionnaireView, self).get(*args, **kwargs)
-
-        return redirect("questionnaire:landing_page")
-
-
-@method_decorator([never_cache, login_required], name='dispatch')
-class CreateStartQuestionnaireView(LoginRequiredMixin, CreateView):
-    model = questionnaire.models.QuestionnaireStart
-    # fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
-    form_class = questionnaire.forms.QuestionnaireStartForm
-    template_name = 'questionnaire/questionnaire_start_form.html'
-    success_url = reverse_lazy('questionnaire:landing_page')
-
-    # fügt dem Formular den aufrufenden PseudoUser hinzu und ändert das Geschlecht
-    def form_valid(self, form):
-        form.instance.pseudo_user = self.request.user
-        pseudo_user = self.request.user
-        pseudo_user.gender = self.request.POST['gender']
-        print(self.request.POST['gender'])
-        pseudo_user.save()
-        messages.success(self.request, f"Fragebogen gespeichert")
-        return super().form_valid(form)
-
-    # Overrides the get method, view can only be called under certain conditions
-    def get(self, *args, **kwargs):
-        if QuestionnaireStart.objects.filter(pseudo_user__exact=self.request.user):
-            return redirect("questionnaire:landing_page")
-        else:
-            return super(CreateStartQuestionnaireView, self).get(*args, **kwargs)
-
-
-@method_decorator([never_cache, login_required], name='dispatch')
-class CreateEndQuestionnaireView(LoginRequiredMixin, CreateView):
-    model = questionnaire.models.QuestionnaireEnd
-    fields = ['question_one', 'question_two', 'question_three', 'question_four', 'question_five', 'question_six']
-    template_name = 'questionnaire/questionnaire_end_form.html'
-    success_url = reverse_lazy('questionnaire:landing_page')
-
-    # fügt dem Formular den aufrufenden PseudoUser hinzu
-    def form_valid(self, form):
-        form.instance.pseudo_user = self.request.user
-        messages.success(self.request, f"Fragebogen gespeichert")
-        return super().form_valid(form)
-
-    # Overrides the get method, view can only be called under certain conditions
-    def get(self, *args, **kwargs):
-        if QuestionnaireDaily.objects.filter(pseudo_user__exact=self.request.user).count() < 60:
-            return redirect("questionnaire:landing_page")
-        if QuestionnaireEnd.objects.filter(pseudo_user__exact=self.request.user).exists():
-            return redirect("questionnaire:landing_page")
-
-        return super(CreateEndQuestionnaireView, self).get(*args, **kwargs)
 
 
 class CreateChoice(UserPassesTestMixin, LoginRequiredMixin, CreateView):
@@ -271,6 +206,7 @@ class CreateChoice(UserPassesTestMixin, LoginRequiredMixin, CreateView):
         return self.request.user.is_staff
 
 
+@method_decorator([never_cache, login_required], name='dispatch')
 class CreateQuestion(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     model = questionnaire.models.Question
     form_class = questionnaire.forms.QuestionForm
@@ -278,65 +214,81 @@ class CreateQuestion(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     login_url = 'member:login'
 
     def form_valid(self, form):
-        form.instance.question_catalogue = QuestionCatalogue.objects.filter(name=self.kwargs['which_catalogue'])[0]
-        print(self.kwargs)
-        return super().form_valid(form)
+        context = self.get_context_data()
+        choices = context['choices']
+        with transaction.atomic():
+            form.instance.question_catalogue = QuestionCatalogue.objects.filter(name=self.kwargs['which_catalogue'])[0]
+            print(self.kwargs)
+            form.instance.created_by = self.request.user
+            self.object = form.save()
+        return super(CreateQuestion, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         data = super(CreateQuestion, self).get_context_data(**kwargs)
+        data['which_catalogue'] = QuestionCatalogue.objects.filter(name=self.kwargs['which_catalogue'])[0]
         if self.request.POST:
             data['choices'] = QuestionChoiceFormset(self.request.POST)
         else:
             data['choices'] = QuestionChoiceFormset()
         return data
 
-    def form_invalid(self, form):
-        context = self.get_context_data()
-        choices = context['choices']
-        with transaction.atomic():
-            form.instance.created_by = self.request.user
-            self.object = form.save()
-        if choices.is_valid():
-            choices.instance = self.object
-            choices.save()
-        return super(CreateQuestion, self).form_valid(form)
-
     def get_success_url(self):
-        success_url = '../../questionnaire_catalogue/' + self.kwargs['which_catalogue']
+        success_url = '../../question/' + str(self.object.pk) + '/choice/edit'
         return success_url
 
     def test_func(self):
         return self.request.user.is_staff
 
 
-@method_decorator(login_required, name='dispatch')
-class QuestionUpdateView(UpdateView):
-    model = questionnaire.models.Question
-    fields = ['name', 'question_text', 'hidden', 'show_at_question']
+class QuestionDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Question
+
+    def test_func(self):
+        return self.request.user.is_staff
 
     def get_success_url(self):
-        success_url = '../../questionnaire_catalogue/' + self.kwargs['which_catalogue']
+        success_url = '../questionnaire_catalogue/' + self.object.question_catalogue.name
         return success_url
 
 
-def test_for_print(request):
-    pseudo_user = PseudoUser.objects.filter(user_code__exact='pseudo_user')
-    ##
-    test_quests = QuestionnaireTestStart.objects.filter(pseudo_user=pseudo_user[0])
-    index = 0
+class QuestionDetailView(DetailView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Question
+    template_name = 'questionnaire/question_detail.html'
 
-    for quest in test_quests:
-        # Gets id for content_type_query
-        test_questionnaire = ContentType.objects.get_for_model(QuestionnaireTestStart)
-        answers = Answer.objects.filter(content_type__pk=test_questionnaire.id, object_id__exact=quest.id)
-
-        print(quest)
-        for a in answers:
-            print(a.answer_text)
-            print(a.object_id)
-        index += 1
+    def test_func(self):
+        return self.request.user.is_staff
 
 
+@method_decorator([never_cache, login_required], name='dispatch')
+class QuestionChoiceUpdateView(SingleObjectMixin, FormView, UserPassesTestMixin, LoginRequiredMixin):
+    model = Question
+    template_name = 'questionnaire/question_choice_edit.html'
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Question.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Question.objects.all())
+        return super().post(request, *args, **kwargs)
+
+    def get_form(self, form_class=None):
+        return QuestionChoiceFormset(**self.get_form_kwargs(), instance=self.object)
+
+    def form_valid(self, form):
+        form.save()
+        messages.success(self.request, 'Änderungen gespeichert')
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse('questionnaire:question_detail', kwargs={'pk': self.object.pk})
+
+
+@login_required(login_url='questionnaire:landing_page')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def show_catalogue(request, which_questionnaire):
     question_catalogue = QuestionCatalogue.objects.filter(name__exact=which_questionnaire)
@@ -347,10 +299,10 @@ def show_catalogue(request, which_questionnaire):
     return render(request, 'questionnaire/question_catalogue.html', context)
 
 
+@login_required(login_url='questionnaire:landing_page')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def show_questionnaire(request, which_quest):
+def create_questionnaire(request, which_quest):
     regular_questions = []
-
     question_catalogue = QuestionCatalogue.objects.filter(name=which_quest)
     questions = question_catalogue[0].get_all_questions()
 
@@ -361,22 +313,33 @@ def show_questionnaire(request, which_quest):
     if which_quest == 'test':
         page_title = 'Test Fragebogen'
     elif which_quest == 'start':
+        if check_for_start_questionnaire(request):
+            return redirect("questionnaire:landing_page")
         page_title = 'Start Fragebogen'
     elif which_quest == 'daily':
+        if check_for_today_questionnaire(request):
+            return redirect('questionnaire:landing_page')
         page_title = 'Täglicher Fragebogen'
     elif which_quest == 'end':
+        if Questionnaire.objects.filter(pseudo_user__exact=request.user,
+                                        is_end_questionnaire=False,
+                                        is_start_questionnaire=False).count() < Service.PERIOD or \
+                Questionnaire.objects.filter(
+                    pseudo_user__exact=request.user,
+                    is_end_questionnaire=True):
+            return redirect('questionnaire:landing_page')
         page_title = 'Letzter Fragebogen'
     else:
         page_title = 'Fehler 404'
 
     if questions.count() == 0:
-        ## TODO Template keine Fragen angelegt
-        return redirect('questionnaire:landing_page')
+        return render(request, 'questionnaire/no_questions.html')
 
     return render(request, 'questionnaire/questionnaire_form.html',
                   {'questions': regular_questions, 'page_title': page_title, 'quest': which_quest})
 
 
+@login_required(login_url='questionnaire:landing_page')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def save_quest(request, which_quest):
     questions = Question.objects.filter(question_catalogue__name=which_quest)
@@ -388,20 +351,20 @@ def save_quest(request, which_quest):
     for question in questions:
         get_choices.append(question.get_all_choices())
 
-    if which_quest == 'test':
-        quest = QuestionnaireTest(pseudo_user=request.user)
-    elif which_quest == 'start':
-        quest = QuestionnaireTestStart(pseudo_user=request.user)
+    if which_quest == 'start':
+        quest = Questionnaire(pseudo_user=request.user)
+        quest.is_start_questionnaire = True
         quest.gender = request.POST['gender']
         pseudo_user = request.user
         pseudo_user.gender = request.POST['gender']
         pseudo_user.save()
     elif which_quest == 'daily':
-        quest = QuestionnaireDaily(pseudo_user=request.user)
+        quest = Questionnaire(pseudo_user=request.user)
     elif which_quest == 'end':
-        quest = QuestionnaireEnd(pseudo_user=request.user)
+        quest = Questionnaire(pseudo_user=request.user)
+        quest.is_end_questionnaire = True
     else:
-        quest = QuestionnaireTest(pseudo_user=request.user)
+        quest = Questionnaire(pseudo_user=request.user)
     quest.save()
 
     for question in questions:
@@ -412,12 +375,32 @@ def save_quest(request, which_quest):
         question_name = request.POST[question.name]
         question_list.append(question_name)
         answer_text = Choice.objects.filter(question=question, value=question_name)[0]
-        answer = Answer(pseudo_user=request.user, value=question_name, answer_text=answer_text,
-                        content_object=quest,
-                        object_id=quest.id)
+        answer = Answer(pseudo_user=request.user, value=question_name, answer_text=answer_text, questionnaire=quest)
         answer_list.append(answer)
         answer.save()
 
+    messages.success(request, 'Fragebogen gespeichert')
+
     # return redirect('questionnaire:landing_page')
-    return render(request, 'questionnaire/test.html',
-                  {'questions': question_list, 'answer_list': answer_list, 'quest': quest, 'get_choices': get_choices})
+    return redirect('questionnaire:landing_page')
+
+
+def check_for_today_questionnaire(request):
+    daily_questionnaires = Questionnaire.objects.filter(
+        pseudo_user__exact=request.user,
+        is_start_questionnaire=False,
+        is_end_questionnaire=False)
+    if daily_questionnaires.filter(date__contains=datetime.date.today(),
+                                   date__startswith=datetime.date.today()):
+        return True
+    return False
+
+
+def check_for_start_questionnaire(request):
+    start_questionnaire = Questionnaire.objects.filter(
+        pseudo_user__exact=request.user, is_start_questionnaire=True)
+    print(start_questionnaire)
+    if start_questionnaire.count() == 0:
+        return False
+    else:
+        return True

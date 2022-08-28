@@ -1,17 +1,15 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <div class="text-center questionnaire-header">
-        <h1>Neue Frage</h1>
-    </div>
+    <h1>Frage anlegen</h1>
+
     <div class="border position-relative m-4 p-5 form-floating">
         <div class="mx-auto">
             <form method="post">
-
                 {% bootstrap_form form %}
                 {% csrf_token %}
                 <input class="btn btn-primary" type="submit" value="Speichern">
-                <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' which_catalogue %}"
+                <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
                    role="button">Zurück</a>
             </form>
         </div>

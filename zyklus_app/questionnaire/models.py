@@ -4,8 +4,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-
+from django.contrib.contenttypes.fields import  GenericRelation
+from django.urls import reverse
 # Create your models here.
 from questionnaire import choices
 
@@ -59,59 +59,8 @@ class PseudoUser(AbstractBaseUser, PermissionsMixin):
         return self.user_code
 
 
-class QuestionnaireEnd(models.Model):
-    """Completion Questionnaire"""
-    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
-                                                      default=0)
-    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    pseudo_user = models.OneToOneField(PseudoUser, on_delete=models.CASCADE, null=True)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-
-    def __str__(self):
-        return f'{self.pseudo_user} {str(self.date.date())}'
-
-
-class QuestionnaireStart(models.Model):
-    """Lookup Questionnaire"""
-    gender = models.CharField(_('Geschlecht'), max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
-    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
-                                                      default=0)
-    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-    pseudo_user = models.OneToOneField(PseudoUser, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return f'{self.pseudo_user} {str(self.date.date())}'
-
-
-class QuestionnaireDaily(models.Model):
-    """Daily Questionnaire"""
-    question_one = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_two = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_three = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)],
-                                                      default=0)
-    question_four = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_five = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    question_six = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(7)], default=0)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-
-    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return f'{self.pseudo_user} {str(self.date)}'
-
-
 class QuestionCatalogue(models.Model):
-    name = models.CharField(max_length=5, choices=choices.QUESTIONNAIRE_CHOICES, default='None',
+    name = models.CharField(max_length=25, choices=choices.QUESTIONNAIRE_CHOICES, default='None',
                             unique='True')
 
     def __str__(self):
@@ -126,7 +75,7 @@ class Question(models.Model):
     name = models.CharField(_('Identifikator'), max_length=10, default='', unique='True')
     question_text = models.CharField(_('Frage Text'), max_length=200)
     hidden = models.BooleanField(_('Frage versteckt?'), default='False')
-    show_at_question = models.CharField(_('Identifikator um angezeigt zu werden'), max_length=10, default='')
+    show_at_question = models.ForeignKey('Question', on_delete=models.CASCADE, null=True, blank=True)
     question_catalogue = models.ForeignKey(QuestionCatalogue, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -135,11 +84,18 @@ class Question(models.Model):
     def get_all_choices(self):
         return Choice.objects.filter(question=self)
 
+    def get_absolute_url(self):
+        return reverse('questionnaire:question_detail', kwargs={'pk': self.pk})
+
 
 class Choice(models.Model):
-    question = models.ForeignKey(Question, null=False, blank=False, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    value = models.IntegerField(default=0)
+    question = models.ForeignKey(Question,
+                                 null=False,
+                                 blank=False,
+                                 on_delete=models.CASCADE,
+                                 related_name='question_choice')
+    choice_text = models.CharField(_('Antwortmöglichkeit'), max_length=200)
+    value = models.IntegerField(_('Wert'), default=0)
 
     def __str__(self):
         return str(self.choice_text)
@@ -149,35 +105,20 @@ class Answer(models.Model):
     pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE)
     value = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], default=10)
     answer_text = models.CharField(max_length=200)
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
     date = models.DateTimeField(auto_now_add=True, blank=True)
+    questionnaire = models.ForeignKey('Questionnaire', on_delete=models.CASCADE, null=False, blank=False, default='')
 
     def __str__(self):
         return f'{self.pseudo_user} {str(self.date)}'
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['content_type', 'object_id'])
-        ]
 
-
-class QuestionnaireTest(models.Model):
+class Questionnaire(models.Model):
     """Test Questionnaire"""
     date = models.DateTimeField(auto_now_add=True, blank=True)
     pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
     GenericRelation(Answer, related_query_name='answer')
-
-    def __str__(self):
-        return f'{self.pseudo_user} {str(self.date)}'
-
-
-class QuestionnaireTestStart(models.Model):
-    """Test Questionnaire"""
-    gender = models.CharField(_('Geschlecht'), max_length=6, choices=choices.GENDER_CHOICES, default='Null', null=True)
-    date = models.DateTimeField(auto_now_add=True, blank=True)
-    pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
+    is_start_questionnaire = models.BooleanField(default=False)
+    is_end_questionnaire = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.pseudo_user} {str(self.date)}'

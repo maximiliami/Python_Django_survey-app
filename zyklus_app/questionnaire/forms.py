@@ -1,15 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 from django.contrib.contenttypes.forms import ModelForm as CModelForm
 
-from questionnaire.models import PseudoUser, QuestionnaireStart, Question, Choice
+from questionnaire.models import PseudoUser, Question, Choice
 from service.services import Service
 
 
 # overrides the UserCreationForm so that it is possible to create a PseudoUser
-
-
 class RegisterForm(UserCreationForm):
     class Meta:
         model = PseudoUser
@@ -34,13 +31,6 @@ class UpdateUserForm(UserChangeForm):
         self.fields['pair'].queryset = open_pairs
 
 
-class QuestionnaireStartForm(ModelForm):
-    class Meta:
-        model = QuestionnaireStart
-        fields = '__all__'
-        exclude = ('pseudo_user',)
-
-
 class QuestionForm(CModelForm):
     class Meta:
         model = Question
@@ -54,4 +44,8 @@ class ChoiceForm(CModelForm):
         fields = '__all__'
 
 
-QuestionChoiceFormset = inlineformset_factory(Question, Choice, fields=('question',), extra=3)
+QuestionChoiceFormset = inlineformset_factory(Question, Choice,
+                                              fields=['question', 'choice_text', 'value', ],
+                                              extra=7,
+                                              max_num=7,
+                                              can_delete=True, )

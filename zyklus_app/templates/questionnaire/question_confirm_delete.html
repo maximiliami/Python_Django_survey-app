@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{# Fills Block content #}
+{% block content %}
+    <div class="text-center questionnaire-header">
+        <div class="border position-relative m-4 p-5 form-floating text-center">
+            <p>Möchtest du <b>"{{ object }}"</b> wirklich löschen?</p>
+            <form method="post" class="form">
+                {% bootstrap_form form %}
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" value="Löschen">
+                <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
+                   role="button">Zurück</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

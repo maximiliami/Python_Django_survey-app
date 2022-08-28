@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+    <div class="border position-relative m-4 p-5 form-floating">
+        <h1>{{ question.question_text }}</h1>
+        <div class="mx-auto">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for hidden_field in form.hidden_fields %}
+                    {{ hidden_field.errors }}
+                    {{ hidden_field }}
+                {% endfor %}
+                {{ form.management_form }}
+                {{ form.non_form_errors }}
+
+                <h3>Antwortmöglichkeiten bearbeiten</h3>
+
+                {% for choice_form in form.forms %}
+                    <hr>
+                    <h5>
+                        {% if choice_form.instance.id %}
+                            Antwortmöglichkeit: <b> {{ choice_form.instance.choice_text }} </b>
+                        {% else %}
+                            {% if form.forms|length > 1 %}
+                                Antwortmöglichkeit hinzufügen:
+                            {% endif %}
+                        {% endif %}
+                    </h5>
+                    <table>
+                    {{ choice_form.as_table }}
+                    </table>
+                {% endfor %}
+
+                <input class="btn btn-primary" type="submit" value="Speichern">
+                <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
+                   role="button">Zurück</a>
+                <a class="btn btn-danger" href="{% url 'questionnaire:delete_question' question.id %}"
+                   role="button">Löschen</a>
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

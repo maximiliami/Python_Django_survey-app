@@ -40,11 +40,7 @@ class UserAdminConfig(UserAdmin):
 # Register your models here.
 admin.site.register(Pair)
 admin.site.register(PseudoUser, UserAdminConfig)
-admin.site.register(QuestionnaireStart)
-admin.site.register(QuestionnaireEnd)
-admin.site.register(QuestionnaireDaily)
-admin.site.register(QuestionnaireTest)
-admin.site.register(QuestionnaireTestStart)
+admin.site.register(Questionnaire)
 admin.site.register(Question)
 admin.site.register(Choice)
 admin.site.register(QuestionCatalogue)

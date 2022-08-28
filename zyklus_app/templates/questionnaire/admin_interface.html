@@ -73,42 +73,44 @@
                                href="{% url 'questionnaire:pair_detail' pair.id %}">{{ pair.ident }}</a>
                         </td>
                     </tr>
+
                 {% endfor %}
 
             </table>
-            <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
         {% endif %}
+        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_pair' %}" role="button">Neues Paar</a>
+
     </div>
     <div class="border position-relative m-4 p-5 form-floating">
         <h3>Fragen Kataloge für Fragebögen</h3>
         {% if not question_catalogues.exists %}
-        <table class="table table-striped">
-            <thead class="table">
-            <tr>
-                <th scope="col">Noch kein Fragenkatalog angelegt</th>
-            </tr>
-            </thead>
-            <tr>
-                <td><b><a href="{% url 'questionnaire:landing_page' %}">Neues Paar</a></b></td>
-            </tr>
-        </table>
-        {% else %}
-        <table class="table table-striped">
-            <thead class="table">
-            <tr>
-                <th scope="col">Kataloge</th>
-            </tr>
-            </thead>
-
-            {% for question_catalogue in question_catalogues %}
+            <table class="table table-striped">
+                <thead class="table">
                 <tr>
-                    <td><a class="link-dark"
-                           href="{% url 'questionnaire:questionnaire_catalogue' question_catalogue.name %}">{{ question_catalogue.name }}</a>
-                    </td>
+                    <th scope="col">Noch kein Fragenkatalog angelegt</th>
                 </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
+                </thead>
+                <tr>
+                    <td><b><a href="{% url 'questionnaire:landing_page' %}">Neuer Fragebogen</a></b></td>
+                </tr>
+            </table>
+        {% else %}
+            <table class="table table-striped">
+                <thead class="table">
+                <tr>
+                    <th scope="col">Kataloge</th>
+                </tr>
+                </thead>
+
+                {% for question_catalogue in question_catalogues %}
+                    <tr>
+                        <td><a class="link-dark"
+                               href="{% url 'questionnaire:questionnaire_catalogue' question_catalogue.name %}">{{ question_catalogue.name }}</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
     </div>
 
 {% endblock %}

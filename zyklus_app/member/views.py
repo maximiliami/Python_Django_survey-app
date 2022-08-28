@@ -8,7 +8,7 @@ from django.views.generic import ListView, DeleteView, DetailView, UpdateView, C
 from django.views.decorators.cache import cache_control
 # Create your views here.
 from questionnaire.forms import RegisterForm, UpdateUserForm
-from questionnaire.models import PseudoUser, QuestionnaireDaily, QuestionnaireStart, QuestionnaireEnd
+from questionnaire.models import PseudoUser, Questionnaire
 
 
 # logs a user in
@@ -102,9 +102,15 @@ class MemberDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     model = PseudoUser
 
     def get_context_data(self, **kwargs):
-        daily_questionnaires = QuestionnaireDaily.objects.filter(pseudo_user__exact=self.object)
-        start_questionnaire = QuestionnaireStart.objects.filter(pseudo_user__exact=self.object)
-        end_questionnaire = QuestionnaireEnd.objects.filter(pseudo_user__exact=self.object)
+        daily_questionnaires = Questionnaire.objects.filter(pseudo_user__exact=self.object,
+                                                            is_end_questionnaire=False,
+                                                            is_start_questionnaire=False)
+        start_questionnaire = Questionnaire.objects.filter(pseudo_user__exact=self.object,
+                                                           is_end_questionnaire=False,
+                                                           is_start_questionnaire=False)
+        end_questionnaire = Questionnaire.objects.filter(pseudo_user__exact=self.object,
+                                                         is_end_questionnaire=False,
+                                                         is_start_questionnaire=False)
 
         context = super().get_context_data(**kwargs)
         context['dq'] = len(daily_questionnaires)
