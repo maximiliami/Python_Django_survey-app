@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'webpush',
     'pwa',
-    'extra_views'
 ]
 
 MIDDLEWARE = [

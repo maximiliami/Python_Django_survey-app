@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import  GenericRelation
 from django.urls import reverse
 # Create your models here.
 from questionnaire import choices
@@ -116,7 +115,6 @@ class Questionnaire(models.Model):
     """Test Questionnaire"""
     date = models.DateTimeField(auto_now_add=True, blank=True)
     pseudo_user = models.ForeignKey(PseudoUser, on_delete=models.CASCADE, null=True)
-    GenericRelation(Answer, related_query_name='answer')
     is_start_questionnaire = models.BooleanField(default=False)
     is_end_questionnaire = models.BooleanField(default=False)
 
