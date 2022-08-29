@@ -294,7 +294,7 @@ class QuestionChoiceUpdateView(SingleObjectMixin, FormView, UserPassesTestMixin,
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        success_url = '../../../question/' + str(self.object.pk) + '/choice/edit'
+        success_url = '../../../questionnaire_catalogue/' + self.object.question_catalogue.name
         return success_url
 
 

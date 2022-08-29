@@ -45,13 +45,6 @@
                     {% endif %}
                     {% if user.is_superuser or user.is_staff %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'member:create_member' %}">Benutzer anlegen</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'questionnaire:create_pair' %}" tabindex="-1">Paar
-                                anlegen</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="{% url 'questionnaire:download_all_data' %}"
                                tabindex="-1">Download csv</a>
                         </li>

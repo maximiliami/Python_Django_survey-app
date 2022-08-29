@@ -48,7 +48,9 @@ class Service:
                     new_dq = Questionnaire()
                     new_dq.pseudo_user = user
                     new_dq.save()
-                    for question in Question.objects.filter(question_catalogue='daily'):
+                    question_catalogue = QuestionCatalogue.objects.filter(name__exact='daily')
+                    questions = QuestionCatalogue.get_all_questions(question_catalogue[0])
+                    for question in questions:
                         answer = Answer(pseudo_user=user,
                                         value=10,
                                         answer_text='Automatisch generiert',
@@ -123,6 +125,7 @@ class Service:
                     answer_list_user_two = []
                     line = []
 
+                    # TODO Questionnaire hat keine Antworten
                     print(f'(Ausgangswert: {dq_user_one}, {dq_user_two})')
                     if dq_user_one is None:
                         dq_user_one = Questionnaire(pseudo_user=PseudoUser(user_code='Default'))

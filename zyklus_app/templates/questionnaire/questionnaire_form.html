@@ -12,7 +12,7 @@
 
     <form action="{% url 'questionnaire:save_q' quest %}" method="post">
         {% csrf_token %}
-        <div class="border position-relative m-4 p-5">
+        <div class="border position-relative m-2 p-3">
             <div class="mx-auto">
                 <fieldset>
                     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
