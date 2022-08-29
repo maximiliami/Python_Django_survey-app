@@ -1,11 +1,21 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <h1>{{ question.question_text }}</h1>
-
-    {% for choice in question.question_choice.all %}
-        <p>{{ choice.choice_text }} {{ choice.value }}</p>
-    {% endfor %}
-    <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
-       role="button">Zurück</a>
+    <div class="text-center questionnaire-header">
+        <h1>{{ question.question_text }}</h1>
+    </div>
+    <div class="border position-relative m-4 p-5 form-floating">
+        <table>
+        {% for choice in question.question_choice.all %}
+            <tr>
+            <th>{{ choice.choice_text }}</th>
+            </tr>
+            <tr>
+            <th>{{ choice.value }}</th>
+            </tr>
+        {% endfor %}
+        </table>
+        <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
+           role="button">Zurück</a>
+    </div>
 {% endblock %}

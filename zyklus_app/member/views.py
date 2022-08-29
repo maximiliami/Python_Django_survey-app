@@ -68,6 +68,9 @@ class CreateMemberView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     def test_func(self):
         return self.request.user.is_staff
 
+    def get_success_url(self):
+        return reverse_lazy('questionnaire:landing_page')
+
 
 # changes a PseudoUser
 class MemberUpdateView(UpdateView):
@@ -76,7 +79,7 @@ class MemberUpdateView(UpdateView):
     template_name_suffix = '_update_form'
 
     def get_success_url(self):
-        return reverse_lazy('member:member_list')
+        return reverse_lazy('questionnaire:landing_page')
 
 
 # shows a list of PseudoUser
@@ -95,6 +98,9 @@ class MemberDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.is_staff
+
+    def get_success_url(self):
+        return reverse_lazy('questionnaire:landing_page')
 
 
 # shows a selected PseudoUser

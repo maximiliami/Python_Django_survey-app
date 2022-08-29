@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <div class="border position-relative m-4 p-5 form-floating">
+    <div class="text-center questionnaire-header">
         <h1>{{ question.question_text }}</h1>
+    </div>
+
+    <div class="border position-relative m-4 p-5 form-floating">
+
         <div class="mx-auto">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -27,12 +31,13 @@
                         {% endif %}
                     </h5>
                     <table>
-                    {{ choice_form.as_table }}
+                        {{ choice_form.as_table }}
                     </table>
                 {% endfor %}
 
                 <input class="btn btn-primary" type="submit" value="Speichern">
-                <a class="btn btn-primary" href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
+                <a class="btn btn-primary"
+                   href="{% url 'questionnaire:questionnaire_catalogue' question.question_catalogue %}"
                    role="button">Zurück</a>
                 <a class="btn btn-danger" href="{% url 'questionnaire:delete_question' question.id %}"
                    role="button">Löschen</a>

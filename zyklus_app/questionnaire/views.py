@@ -9,7 +9,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.views.decorators.cache import cache_control
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic.detail import SingleObjectMixin
 
@@ -134,6 +134,9 @@ class CreatePairView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     def test_func(self):
         return self.request.user.is_staff
 
+    def get_success_url(self):
+        return reverse_lazy('questionnaire:landing_page')
+
 
 # shows a list of Pairs
 class PairListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
@@ -159,16 +162,18 @@ class PairUpdateView(UpdateView):
     template_name_suffix = '_update_form'
 
     def get_success_url(self):
-        return reverse_lazy('questionnaire:pair_list')
+        return reverse_lazy('questionnaire:landing_page')
 
 
 # confirm the deletion of a Pair
 class PairDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
     model = questionnaire.models.Pair
-    success_url = reverse_lazy('questionnaire:pair_list')
 
     def test_func(self):
         return self.request.user.is_staff
+
+    def get_success_url(self):
+        return reverse_lazy('questionnaire:landing_page')
 
 
 # shows a selected Pair
@@ -204,6 +209,10 @@ class CreateChoice(UserPassesTestMixin, LoginRequiredMixin, CreateView):
 
     def test_func(self):
         return self.request.user.is_staff
+
+    def get_success_url(self):
+        success_url = '../../question/' + str(self.object.pk) + '/choice/edit'
+        return success_url
 
 
 @method_decorator([never_cache, login_required], name='dispatch')
@@ -285,7 +294,8 @@ class QuestionChoiceUpdateView(SingleObjectMixin, FormView, UserPassesTestMixin,
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse('questionnaire:question_detail', kwargs={'pk': self.object.pk})
+        success_url = '../../../question/' + str(self.object.pk) + '/choice/edit'
+        return success_url
 
 
 @login_required(login_url='questionnaire:landing_page')
