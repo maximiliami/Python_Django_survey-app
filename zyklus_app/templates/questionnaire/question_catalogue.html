@@ -5,7 +5,7 @@
 {% block content %}
 
     <div class="text-center questionnaire-header">
-        <h1>Fragen für den einführenden Fragebogen</h1>
+        <h1>Fragenkatalog</h1>
     </div>
     <div class="border position-relative m-4 p-5 form-floating">
 
@@ -23,8 +23,8 @@
             {% endfor %}
 
         </table>
-        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:create_question' which_catalogue=question_catalogue %}" role="button">Neue Frage</a>
-        <a class="btn btn-primary btn-lg" href="{% url 'questionnaire:landing_page' %}" role="button">Zurück</a>
+        <a class="btn btn-primary btn-lg mt-1" href="{% url 'questionnaire:create_question' which_catalogue=question_catalogue %}" role="button">Neue Frage</a>
+        <a class="btn btn-primary btn-lg mt-1" href="{% url 'questionnaire:landing_page' %}" role="button">Zurück</a>
     </div>
 
 {% endblock %}
