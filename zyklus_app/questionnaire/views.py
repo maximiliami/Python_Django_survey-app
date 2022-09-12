@@ -45,7 +45,6 @@ def landing_page(request):
 
         # render admin interface if Staff or Superuser
         if request.user.is_superuser or request.user.is_staff:
-
             return admin_interface(request)
         else:
             # Program flow for normal users
@@ -128,7 +127,6 @@ class CreatePairView(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     model = questionnaire.models.Pair
     fields = ['ident']
     template_name = 'questionnaire/pair_form.html'
-    success_url = 'pair_list'
     login_url = 'member:login'
 
     def test_func(self):
@@ -155,14 +153,25 @@ class PairListView(UserPassesTestMixin, LoginRequiredMixin, ListView):
 
 
 # changes a Pair
-@method_decorator(login_required, name='dispatch')
-class PairUpdateView(UpdateView):
+class PairUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
     model = questionnaire.models.Pair
     fields = ['ident']
     template_name_suffix = '_update_form'
 
     def get_success_url(self):
         return reverse_lazy('questionnaire:landing_page')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def form_valid(self, form):
+        form.instance.pseudo_user = self.request.user
+        pseudo_user = self.request.user
+        pseudo_user.gender = self.request.POST['gender']
+        print(self.request.POST['gender'])
+        pseudo_user.save()
+        messages.success(self.request, f"Fragebogen gespeichert")
+        return super().form_valid(form)
 
 
 # confirm the deletion of a Pair
@@ -177,7 +186,6 @@ class PairDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 
 # shows a selected Pair
-@method_decorator(login_required, name='dispatch')
 class PairDetailView(UserPassesTestMixin, LoginRequiredMixin, DetailView):
     model = questionnaire.models.Pair
     context_object_name = 'pair'

@@ -101,7 +101,7 @@ class Service:
                 print(f'Questions: {questions}')
 
                 for question in questions:
-                    question_list.append(question.question_text)
+                    question_list.append(question.name)
                     print(f'Question_Text: {question.question_text}')
 
                 for e in headline_user_one:

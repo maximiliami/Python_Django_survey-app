@@ -14,9 +14,6 @@ from questionnaire.models import PseudoUser, Questionnaire
 # logs a user in
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def login_user(request):
-    context = {'page_title': 'Login'}
-    context_logged_in = {'page_title': 'Test'}
-
     if request.user.is_authenticated:
         return redirect('questionnaire:landing_page')
 
@@ -30,20 +27,20 @@ def login_user(request):
             return redirect('questionnaire:landing_page')
         else:
             messages.error(request, "There was an error!")
-            return redirect('/', context)
+            return redirect('member:login')
     else:
-        return render(request, 'authenticate/login.html', context)
+        return render(request, 'authenticate/login.html')
 
 
 # logs a user out
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def logout_view(request):
+def logout_user(request):
     logout(request)
     return redirect('member:login')
 
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-def logout_user(request):
+def logout_view(request):
     return render(request, 'authenticate/logout.html')
 
 

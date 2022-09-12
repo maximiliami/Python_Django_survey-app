@@ -49,3 +49,4 @@ QuestionChoiceFormset = inlineformset_factory(Question, Choice,
                                               extra=7,
                                               max_num=7,
                                               can_delete=True, )
+
