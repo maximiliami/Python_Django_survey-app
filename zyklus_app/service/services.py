@@ -68,8 +68,8 @@ class Service:
         question_catalogue = QuestionCatalogue.objects.filter(name__exact='daily')
         questions = QuestionCatalogue.get_all_questions(question_catalogue[0])
         question_list = []
-        headline_user_one = ['Pärchen', 'Benutzer1', 'Datum']
-        headline_user_two = ['Benutzer2', 'Datum']
+        headline_user_one = ['Pärchen', 'Benutzer 1', 'Datum']
+        headline_user_two = ['Benutzer 2', 'Datum']
         headline = []
 
         if pk is None:
@@ -112,6 +112,7 @@ class Service:
                     headline.append(e)
                 for e in question_list:
                     headline.append(e)
+                question_list.clear()
 
                 print(f'Headline:{headline}')
 
@@ -162,6 +163,7 @@ class Service:
                     print(f'line: {line}')
 
                     writer.writerow(line)
+                    line.clear()
 
         return this_response
 
