@@ -116,6 +116,7 @@ class Service:
                 print(f'Headline:{headline}')
 
                 writer.writerow(headline)
+                headline.clear()
 
                 for (dq_user_one, dq_user_two) in itertools.zip_longest(pair_user_one_questionnaires,
                                                                         pair_user_two_questionnaires):
